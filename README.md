@@ -4,7 +4,8 @@ Static site for the HSF network. Hosted free on Cloudflare Pages.
 
 ## Files
 - `index.html` — Home
-- `submit.html` — Submit (formats a DM, nothing is stored)
+- `find.html` — Find Your People (how connecting works, all through Instagram DMs, nothing stored)
+- `resources.html` — Resources (internships, programs, festivals, tips)
 - `about.html` — About
 - `styles.css` — all styling
 - `favicon.svg` — icon
