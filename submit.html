@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit &mdash; High School Filmmakers</title>
+<meta name="description" content="Submit your short film or your profile to High School Filmmakers.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html">HSF</a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="submit.html" aria-current="page">Submit</a>
+    <a href="about.html">About</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero hero-small">
+    <p class="label">Submit</p>
+    <h1>Put your work in front of the network.</h1>
+    <p class="lede">Send a short film you made in high school, or your profile if you want to be featured as a filmmaker.</p>
+  </section>
+
+  <section class="panel rules">
+    <p class="label">The rules</p>
+    <ul>
+      <li>You made it while in high school.</li>
+      <li>Short films, under 20 minutes.</li>
+      <li>You have permission from everyone in it and for the music in it.</li>
+      <li>Featured work is shared with credit to you. You keep your film.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <p class="label">The form</p>
+    <p class="form-note">We don't store your info. Fill this in, hit the button, and it lands in our Instagram DMs.</p>
+    <form id="submit-form">
+      <label for="f-name">Your name</label>
+      <input id="f-name" name="name" type="text" autocomplete="name" required>
+
+      <label for="f-ig">Your Instagram handle</label>
+      <input id="f-ig" name="handle" type="text" placeholder="@you" required>
+
+      <label for="f-link">Link to your film or profile</label>
+      <input id="f-link" name="link" type="url" placeholder="https://" required>
+
+      <button class="btn btn-solid" type="submit">Send it to our DMs</button>
+    </form>
+    <p id="form-done" class="form-done" hidden>Copied. Instagram just opened &mdash; paste that into our DM and send.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <span>HSF &mdash; a network for high school filmmakers</span>
+  <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
+</footer>
+
+<script>
+document.getElementById('submit-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var name = document.getElementById('f-name').value.trim();
+  var ig = document.getElementById('f-ig').value.trim();
+  var link = document.getElementById('f-link').value.trim();
+  var msg = 'Submission for HSF\nName: ' + name + '\nIG: ' + ig + '\nLink: ' + link;
+  function openIg() {
+    window.open('https://www.instagram.com/highschoolfilmmakers', '_blank', 'noopener');
+    document.getElementById('form-done').hidden = false;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(msg).then(openIg, openIg);
+  } else {
+    window.prompt('Copy this and DM it to @highschoolfilmmakers on Instagram:', msg);
+  }
+});
+</script>
+</body>
+</html>
