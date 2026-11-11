@@ -39,7 +39,19 @@
       <a class="btn btn-solid" href="board.html">Browse the board</a>
       <a class="btn" href="submit.html">Post a project</a>
     </div>
+    <p class="member-count" id="member-count"></p>
   </section>
+
+
+  <section class="photo-strip" aria-label="Young filmmakers at work">
+    <figure>
+      <img src="https://images.pexels.com/photos/9810364/pexels-photo-9810364.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young film crew shooting a scene together" loading="lazy">
+    </figure>
+    <figure>
+      <img src="https://images.pexels.com/photos/28254441/pexels-photo-28254441.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young filmmaker shooting outdoors with a gimbal" loading="lazy">
+    </figure>
+  </section>
+  <p class="photo-credit">Real shoots, real crews. Photos via Pexels (free to use).</p>
 
   <div class="marquee" aria-hidden="true">
     <div class="marquee-track">
@@ -63,10 +75,16 @@
     </div>
   </section>
 
+  <section class="panel panel-feature founder">
+    <p class="label">From the founder</p>
+    <blockquote>“Hey, I’m James Murphy. I’m 16, I make movies, and I started High School Filmmakers because finding a crew is the hardest part of making a film when you’re in high school. You can write the script and storyboard every shot, but you can’t shoot alone — you need a DP, actors, somebody to hold the boom. Nobody hands you that network at our age, so I built it. Post your project, find your people, and go make the movie.”</blockquote>
+    <p class="founder-sig">— <span class="script-accent">James Murphy</span>, founder, 16</p>
+  </section>
+
   <section class="panel panel-feature">
     <p class="label">The Board</p>
     <h2>Post it. They sign up. You roll camera.</h2>
-    <p>List your project with every role you need - lead actor to boom op. People near you tap a role, drop a first name and age range, and you see everyone on your private responses page. Every post is reviewed by a human before it goes live. No accounts, no emails, no phone numbers, ever.</p>
+    <p>List your project with every role you need - lead actor to boom op. People near you tap a role, drop a first name and age range, and you see everyone on your private responses page. Every post is reviewed by a human before it goes live. Membership is free - no emails, no phone numbers, ever.</p>
     <div class="cta-row">
       <a class="btn btn-solid" href="board.html">See who's near you</a>
       <a class="text-link" href="find.html">How it works &rarr;</a>
@@ -88,6 +106,14 @@
     </div>
   </section>
 </main>
+<script>
+fetch('/api/join').then(function (r) { return r.json(); }).then(function (d) {
+  var el = document.getElementById('member-count');
+  if (el && d && typeof d.count === 'number') {
+    el.innerHTML = '<strong>' + d.count + '</strong> member' + (d.count === 1 ? '' : 's') + ' and counting. <a href="join.html" style="color:#f0654a">Join free</a>.';
+  }
+}).catch(function () {});
+</script>
 
 <footer class="site-footer">
   <div class="footer-top">
@@ -108,4 +134,4 @@
   </div>
 </footer>
 </body>
-  </html>
+</html>
