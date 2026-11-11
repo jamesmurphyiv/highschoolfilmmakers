@@ -176,3 +176,30 @@ form .btn { margin-top: 28px; }
   .footer-top { flex-direction: column; align-items: flex-start; gap: 14px; }
   .footer-bottom { flex-direction: column; }
 }
+
+/* Homepage jazz */
+.script-accent {
+  font-family: 'Yellowtail', 'Space Grotesk', cursive;
+  color: #f0654a; font-size: 1.05em; letter-spacing: 0;
+}
+.marquee {
+  overflow: hidden; border-bottom: 1px solid var(--line);
+  padding: 16px 0; margin-bottom: 8px;
+}
+.marquee-track {
+  display: flex; gap: 56px; width: max-content;
+  white-space: nowrap; animation: hsf-scroll 26s linear infinite;
+  font-family: 'Baseball Club', 'Space Grotesk', sans-serif;
+  font-size: 15px; letter-spacing: .28em; text-transform: uppercase;
+  color: rgba(245, 242, 236, .32);
+}
+.marquee-track span::after { content: '\2022'; margin-left: 56px; color: rgba(240,101,74,.6); }
+@keyframes hsf-scroll { to { transform: translateX(-50%); } }
+.panel { transition: transform .18s ease, border-color .18s ease; }
+.panel:hover { transform: translateY(-3px); border-color: rgba(240,101,74,.5); }
+.panel-feature { border-color: rgba(147,23,15,.65); background: linear-gradient(180deg, rgba(147,23,15,.14), rgba(147,23,15,0) 70%); }
+.panel h3 { margin-top: 6px; }
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .panel, .panel:hover { transition: none; transform: none; }
+}
