@@ -3,17 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join HSF &mdash; High School Filmmakers</title>
-<meta name="description" content="Post your film project to the HSF board and find cast, crew, editors and gear near you.">
+<title>Join &mdash; High School Filmmakers</title>
+<meta name="description" content="Join High School Filmmakers free. Your Instagram handle is your name here. No emails, no phone numbers.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Join - High School Filmmakers">
+<meta property="og:description" content="Join High School Filmmakers free. Your Instagram handle is your name here. No emails, no phone numbers.">
+<meta property="og:image" content="https://highschoolfilmmakers.pages.dev/hsf-logo.png">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Yellowtail&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="board.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-<body>
 <body>
 <header class="site-header">
   <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
@@ -24,65 +27,207 @@
     <a href="board.html">Board</a>
     <a href="festivals.html">Festivals</a>
     <a href="boost.html">Boost</a>
-    <a href="join.html" aria-current="page">Join</a>
     <a href="about.html">About</a>
   </nav>
 </header>
+
 <main>
   <section class="hero hero-small">
-    <p class="label">Join HSF</p>
-    <h1>Become a member.</h1>
-    <p class="lede">Free, 30 seconds, no email, no password. Your Instagram is your membership - post projects, sign up for roles and request boosts as <span class="script-accent">you.</span></p>
+    <p class="label">Membership is free</p>
+    <h1>Join the <span class="script-accent">crew.</span></h1>
+    <p class="lede">Your Instagram handle is your name here. No emails, no phone numbers, ever.</p>
   </section>
-  <section class="panel" id="join-panel">
-    <form id="join-form" novalidate>
-      <div class="field">
-        <label for="j-name">First name *</label>
-        <input id="j-name" type="text" maxlength="20" autocomplete="off">
-      </div>
+
+  <section class="photo-strip" aria-label="Young filmmakers at work">
+    <figure>
+      <img src="https://images.pexels.com/photos/9808169/pexels-photo-9808169.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Young filmmakers shooting a movie scene at home" loading="lazy">
+    </figure>
+    <figure>
+      <img src="https://images.pexels.com/photos/9810364/pexels-photo-9810364.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young film crew shooting a scene together" loading="lazy">
+    </figure>
+  </section>
+  <p class="photo-credit">Photos via Pexels (free to use).</p>
+
+  <section class="panel panel-feature join-panel">
+    <div class="join-tabs" role="tablist">
+      <button class="btn small" id="tab-join" type="button">Join</button>
+      <button class="btn small ghost" id="tab-login" type="button">Log in</button>
+    </div>
+
+    <form id="join-form">
       <div class="field-row">
-        <div class="field">
-          <label for="j-age">Age range *</label>
-          <select id="j-age">
+        <label>First name
+          <input id="j-name" type="text" maxlength="20" autocomplete="given-name" required>
+        </label>
+        <label>Age
+          <select id="j-age" required>
             <option value="">Pick one</option>
             <option value="13-14">13-14</option>
             <option value="15-16">15-16</option>
             <option value="17">17</option>
             <option value="18-plus">18+</option>
           </select>
-        </div>
-        <div class="field">
-          <label for="j-state">State *</label>
-          <select id="j-state"><option value="">Pick one</option></select>
-        </div>
+        </label>
       </div>
-      <div class="field">
-        <label for="j-ig">Instagram * <span class="hint">(this is your member ID - it's how the network knows you)</span></label>
-        <input id="j-ig" type="text" maxlength="30" autocomplete="off" placeholder="@handle">
-      </div>
-      <label class="role-check" style="display:flex;gap:10px;align-items:flex-start;margin-top:14px">
-        <input id="j-agree" type="checkbox" style="margin-top:3px">
-        <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a> and I'm at least 13.</span>
+      <label>State
+        <input id="j-state" type="text" maxlength="40" placeholder="NJ, CA, TX..." required>
+      </label>
+      <label>Instagram handle - this is your member name
+        <div class="at-wrap"><span>@</span><input id="j-ig" type="text" maxlength="30" placeholder="yourhandle" autocomplete="off" required></div>
+      </label>
+      <label>Password for HSF
+        <input id="j-pass" type="password" minlength="8" maxlength="100" autocomplete="new-password" required>
+      </label>
+      <p class="pass-note"><strong>Make up a brand-new password - never your Instagram password.</strong> We will never ask for your Instagram password, and we can't see or recover this one either (we store only a scrambled hash). 8+ characters.</p>
+      <label class="check-row">
+        <input id="j-agree" type="checkbox" required>
+        <span>I agree to the <a href="terms.html" target="_blank">Terms &amp; Conditions</a></span>
       </label>
       <div class="cf-turnstile" data-sitekey="0x4AAAAAAF9K5KyKqg8cTWhp" data-theme="dark"></div>
-      <p id="form-msg" class="form-msg" hidden></p>
-      <button class="btn btn-solid" type="submit" id="join-btn">Join free</button>
+      <button class="btn btn-solid" id="j-btn" type="submit">Join free</button>
+      <p class="form-msg" id="j-msg" role="alert"></p>
     </form>
+
+    <form id="login-form" hidden>
+      <label>Instagram handle
+        <div class="at-wrap"><span>@</span><input id="l-ig" type="text" maxlength="30" autocomplete="off" required></div>
+      </label>
+      <label>HSF password
+        <input id="l-pass" type="password" maxlength="100" autocomplete="current-password" required>
+      </label>
+      <button class="btn btn-solid" id="l-btn" type="submit">Log in</button>
+      <p class="form-msg" id="l-msg" role="alert"></p>
+      <p class="pass-note">Forgot your password? We can't email you - we never collect emails. DM <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">@highschoolfilmmakers</a> from the Instagram you joined with and we'll remove the account so you can rejoin.</p>
+    </form>
+
     <div id="join-done" hidden>
-      <p class="label">You're in</p>
-      <h2 id="done-ig"></h2>
+      <h2>You're in, <span class="script-accent" id="done-ig"></span>.</h2>
       <p id="done-count"></p>
-      <div class="secret-link" style="display:block">
-        Your secret member code (kept in this browser automatically - save it somewhere too, it's how we know it's you and it will not be shown again):<br>
-        <strong id="done-code"></strong>
-      </div>
-      <div class="cta-row">
-        <a class="btn btn-solid" href="board.html">To the board</a>
-        <a class="btn" href="boost.html">Request a boost</a>
-      </div>
+      <p>Posting a project, signing up for a role, and requesting a boost all just work now - this browser stays logged in for 30 days.</p>
+      <a class="btn btn-solid" id="done-next" href="board.html">Go to the board</a>
     </div>
   </section>
 </main>
+
+<script src="hsf-member.js"></script>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var next = params.get('next') || 'board.html';
+  if (!/^[a-z0-9-]+\.html$/.test(next)) next = 'board.html';
+
+  function msg(id, text, ok) {
+    var m = document.getElementById(id);
+    m.textContent = text;
+    m.style.color = ok ? '#7dc98f' : '#f0654a';
+  }
+  var tabJ = document.getElementById('tab-join');
+  var tabL = document.getElementById('tab-login');
+  var formJ = document.getElementById('join-form');
+  var formL = document.getElementById('login-form');
+  function show(which) {
+    formJ.hidden = which !== 'join';
+    formL.hidden = which !== 'login';
+    tabJ.className = 'btn small' + (which === 'join' ? '' : ' ghost');
+    tabL.className = 'btn small' + (which === 'login' ? '' : ' ghost');
+  }
+  tabJ.addEventListener('click', function () { show('join'); });
+  tabL.addEventListener('click', function () { show('login'); });
+
+  // Already logged in on this browser? Say so.
+  hsfMember.ready().then(function (m) {
+    if (m) {
+      document.getElementById('done-ig').textContent = '@' + m.ig;
+      document.getElementById('done-count').textContent = 'You are already logged in on this browser.';
+      document.getElementById('done-next').href = next;
+      document.getElementById('join-done').hidden = false;
+      formJ.hidden = true;
+      tabJ.hidden = true; tabL.hidden = true;
+    }
+  });
+
+  formJ.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('j-btn');
+    var name = document.getElementById('j-name').value.trim();
+    var age = document.getElementById('j-age').value;
+    var state = document.getElementById('j-state').value.trim();
+    var ig = document.getElementById('j-ig').value.trim().replace(/^@/, '');
+    var pass = document.getElementById('j-pass').value;
+    var agree = document.getElementById('j-agree').checked;
+    if (!name || !age || !state || !/^[A-Za-z0-9._]{1,30}$/.test(ig) || pass.length < 8 || !agree) {
+      msg('j-msg', 'Fill every field - password needs 8+ characters, handle is letters, numbers, dots, underscores.');
+      return;
+    }
+    if (pass.toLowerCase() === ig.toLowerCase()) {
+      msg('j-msg', 'Password cannot be your handle.');
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Joining...';
+    var token = '';
+    try { token = document.querySelector('[name=cf-turnstile-response]').value; } catch (err) {}
+    fetch('/api/join', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'join', first_name: name, age_range: age, region: state,
+        ig_handle: ig, password: pass, agree: agree, turnstile_token: token })
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.d.ok) {
+          formJ.hidden = true;
+          tabJ.hidden = true; tabL.hidden = true;
+          document.getElementById('done-ig').textContent = '@' + res.d.ig;
+          document.getElementById('done-count').textContent = res.d.count ? 'Member count: ' + res.d.count + ' and growing.' : '';
+          document.getElementById('done-next').href = next;
+          document.getElementById('join-done').hidden = false;
+        } else if (res.status === 409) {
+          msg('j-msg', 'That Instagram already joined - hit Log in instead.');
+          btn.disabled = false; btn.textContent = 'Join free';
+          show('login');
+        } else if (res.status === 429) {
+          msg('j-msg', 'Slow down - try again later.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        } else if (res.status === 403) {
+          msg('j-msg', 'The human check did not go through. Reload and try again.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        } else {
+          msg('j-msg', 'Something went wrong. Try again in a minute.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        }
+      }).catch(function () {
+        msg('j-msg', 'Network hiccup - try again.');
+        btn.disabled = false; btn.textContent = 'Join free';
+      });
+  });
+
+  formL.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('l-btn');
+    var ig = document.getElementById('l-ig').value.trim().replace(/^@/, '');
+    var pass = document.getElementById('l-pass').value;
+    if (!ig || !pass) { msg('l-msg', 'Handle and password.'); return; }
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    fetch('/api/join', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', ig_handle: ig, password: pass })
+    }).then(function (r) { return r.json().then(function (d) { return { status: r.status, ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.d.ok) {
+          location.href = next;
+        } else if (res.status === 429) {
+          msg('l-msg', 'Too many tries - wait a few minutes.');
+          btn.disabled = false; btn.textContent = 'Log in';
+        } else {
+          msg('l-msg', 'Wrong handle or password.');
+          btn.disabled = false; btn.textContent = 'Log in';
+        }
+      }).catch(function () {
+        msg('l-msg', 'Network hiccup - try again.');
+        btn.disabled = false; btn.textContent = 'Log in';
+      });
+  });
+})();
+</script>
+
 <footer class="site-footer">
   <div class="footer-top">
     <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
@@ -101,70 +246,5 @@
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
-<script src="hsf-member.js"></script>
-<script>
-(function () {
-  var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','Other / outside US'];
-  var sel = document.getElementById('j-state');
-  STATES.forEach(function (s) {
-    var o = document.createElement('option');
-    o.value = s; o.textContent = s;
-    sel.appendChild(o);
-  });
-  function msg(text, ok) {
-    var m = document.getElementById('form-msg');
-    m.textContent = text;
-    m.className = 'form-msg' + (ok ? ' ok' : '');
-    m.hidden = false;
-  }
-  // Already a member on this browser? Say so.
-  hsfMember.verify().then(function (ig) {
-    if (ig) msg('This browser is already a member as @' + ig + '. You can just head to the board.', true);
-  });
-  document.getElementById('join-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var name = document.getElementById('j-name').value.trim();
-    var age = document.getElementById('j-age').value;
-    var state = document.getElementById('j-state').value;
-    var ig = document.getElementById('j-ig').value.trim().replace(/^@/, '');
-    var agree = document.getElementById('j-agree').checked;
-    if (!name || !age || !state || !ig) { msg('Fill in every field and try again.'); return; }
-    if (!agree) { msg('Check the Terms box to join.'); return; }
-    var btn = document.getElementById('join-btn');
-    btn.disabled = true;
-    btn.textContent = 'Joining...';
-    var tokenEl = document.querySelector('[name=cf-turnstile-response]');
-    fetch('/api/join', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ first_name: name, age_range: age, region: state, ig_handle: ig, agree: true, turnstile_token: tokenEl ? tokenEl.value : '' })
-    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, status: r.status, d: d }; }); })
-      .then(function (res) {
-        if (res.ok && res.d.ok) {
-          hsfMember.save(res.d.member_code);
-          document.getElementById('join-form').hidden = true;
-          document.getElementById('done-ig').textContent = '@' + res.d.ig;
-          document.getElementById('done-count').textContent = res.d.count ? 'Member count: ' + res.d.count + ' and growing.' : '';
-          document.getElementById('done-code').textContent = res.d.member_code;
-          document.getElementById('join-done').hidden = false;
-        } else if (res.status === 409) {
-          msg('That Instagram already joined. Your code was shown when you joined - DM @highschoolfilmmakers if you lost it.');
-          btn.disabled = false; btn.textContent = 'Join free';
-        } else if (res.status === 429) {
-          msg('Slow down - try again in an hour.');
-          btn.disabled = false; btn.textContent = 'Join free';
-        } else if (res.status === 403) {
-          msg('The human check did not go through. Reload and try again.');
-          btn.disabled = false; btn.textContent = 'Join free';
-        } else {
-          msg('Something went wrong. Try again in a minute.');
-          btn.disabled = false; btn.textContent = 'Join free';
-        }
-      }).catch(function () {
-        msg('Network trouble. Check your connection and try again.');
-        btn.disabled = false; btn.textContent = 'Join free';
-      });
-  });
-})();
-</script>
 </body>
 </html>
