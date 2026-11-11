@@ -92,7 +92,13 @@
 <script src="hsf-member.js"></script>
 <script>
 (function () {
-  hsfMember.gate(document.getElementById('member-gate'), function () {});
+  hsfMember.gate(document.getElementById('member-gate'), function (ok, m) {
+    if (ok && m) {
+      var igEl = document.getElementById('f-ig');
+      igEl.value = '@' + m.ig;
+      igEl.disabled = true;
+    }
+  });
   var f = document.getElementById('boost-form');
   var pitch = document.getElementById('f-pitch');
   pitch.addEventListener('input', function () {
@@ -119,7 +125,7 @@
     var token = tokenEl ? tokenEl.value : '';
     fetch('/api/boost', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title, pitch: pitchVal, boost_type: type, ig_handle: ig, turnstile_token: token, member_code: hsfMember.code() })
+      body: JSON.stringify({ title: title, pitch: pitchVal, boost_type: type, ig_handle: ig, turnstile_token: token })
     }).then(function (r) {
       if (r.status === 429) { msg('Slow down - try again in an hour.'); return; }
       if (r.status === 401) { msg('Members only - join free first, then request your boost.'); return; }
