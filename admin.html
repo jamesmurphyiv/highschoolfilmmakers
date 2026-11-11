@@ -157,7 +157,8 @@
         status.hidden = false;
         status.textContent = data.count + (data.count === 1 ? ' member.' : ' members.');
       } else {
-      status.hidden = true;
+        status.hidden = true;
+      }
       list.innerHTML = items.map(function (p) {
         if (view === 'pending') {
           return itemHtml(p,
@@ -181,7 +182,6 @@
           '<button class="btn small ghost" data-act="remove" data-id="' + p.project_id + '" type="button">Take down project</button>' +
           '<button class="btn small ghost" data-act="dismiss" data-id="' + p.id + '" type="button">Dismiss report</button>');
       }).join('');
-      }
     }).catch(function () {
       var status = document.getElementById('admin-status');
       status.hidden = false;
