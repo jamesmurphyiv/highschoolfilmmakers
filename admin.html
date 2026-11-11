@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board Admin &mdash; High School Filmmakers</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="board.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="board.html">Board</a>
+  </nav>
+</header>
+<main>
+  <section class="hero hero-small">
+    <p class="kicker">Admin</p>
+    <h1>BOARD REVIEW.</h1>
+  </section>
+  <section id="gate">
+    <div class="field" style="max-width: 360px;">
+      <label for="f-pass">Passcode</label>
+      <input type="password" id="f-pass" autocomplete="off">
+    </div>
+    <div class="cta-row">
+      <button class="btn" id="unlock-btn" type="button">Unlock</button>
+    </div>
+    <div id="gate-msg" class="notice" hidden></div>
+  </section>
+  <section id="panel" hidden>
+    <div class="toolbar">
+      <button class="btn small" data-view="pending" type="button">Pending</button>
+      <button class="btn small ghost" data-view="approved" type="button">Approved</button>
+      <button class="btn small ghost" data-view="reports" type="button">Reports</button>
+    </div>
+    <div id="admin-status" class="empty" hidden></div>
+    <div id="admin-list"></div>
+  </section>
+</main>
+<footer class="site-footer">
+  <span>HSF &mdash; a network for high school filmmakers</span>
+  <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
+</footer>
+<script>
+(function () {
+  var pass = sessionStorage.getItem('hsf_admin') || '';
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function api(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({ 'X-Admin-Passcode': pass }, opts.headers || {});
+    return fetch(path, opts);
+  }
+  function show(id) { document.getElementById(id).hidden = false; }
+  function hide(id) { document.getElementById(id).hidden = true; }
+  var view = 'pending';
+  function rolesOf(p) {
+    try {
+      var r = typeof p.roles === 'string' ? JSON.parse(p.roles) : p.roles;
+      return Array.isArray(r) ? r : [];
+    } catch (e) { return []; }
+  }
+  function itemHtml(p, actions) {
+    return '<div class="admin-item">' +
+      '<div class="tags">' +
+        '<span class="pill">' + esc(p.genre) + '</span>' +
+        '<span class="tag">' + esc(p.compensation) + '</span>' +
+      '</div>' +
+      '<h3>' + esc(p.title) + '</h3>' +
+      '<p class="where">' + esc(p.city) + (p.region ? ', ' + esc(p.region) : '') + ' &middot; ' + esc((p.created_at || '').slice(0, 10)) + '</p>' +
+      '<p class="desc">' + esc(p.logline) + '</p>' +
+      (rolesOf(p).length ? '<div class="tags">' + rolesOf(p).map(function (r) {
+        return '<span class="tag">' + esc(r) + '</span>';
+      }).join('') + '</div>' : '') +
+      (p.ig_handle ? '<p class="contact">IG: @' + esc(p.ig_handle) + '</p>' : '') +
+      (p.reason !== undefined && p.reason !== null ? '<p class="desc"><strong>Report:</strong> ' + esc(p.reason) + '</p>' : '') +
+      '<div class="row">' + actions + '</div>' +
+      '</div>';
+  }
+  function load() {
+    api('/api/admin?view=' + view).then(function (r) {
+      if (r.status === 401) {
+        sessionStorage.removeItem('hsf_admin');
+        pass = '';
+        hide('panel'); show('gate');
+        var gm = document.getElementById('gate-msg');
+        gm.hidden = false; gm.textContent = 'Wrong passcode.';
+        return null;
+      }
+      return r.json();
+    }).then(function (data) {
+      if (!data) return;
+      var list = document.getElementById('admin-list');
+      var status = document.getElementById('admin-status');
+      var items = data.items || [];
+      if (!items.length) {
+        list.innerHTML = '';
+        status.hidden = false;
+        status.textContent = view === 'pending' ? 'Nothing waiting for review.' :
+          view === 'approved' ? 'Nothing approved yet.' : 'No reports.';
+        return;
+      }
+      status.hidden = true;
+      list.innerHTML = items.map(function (p) {
+        if (view === 'pending') {
+          return itemHtml(p,
+            '<button class="btn small" data-act="approve" data-id="' + p.id + '" type="button">Approve</button>' +
+            '<button class="btn small ghost" data-act="reject" data-id="' + p.id + '" type="button">Reject</button>');
+        }
+        if (view === 'approved') {
+          return itemHtml(p,
+            '<button class="btn small ghost" data-act="remove" data-id="' + p.id + '" type="button">Take down</button>');
+        }
+        return itemHtml(p,
+          '<button class="btn small ghost" data-act="remove" data-id="' + p.project_id + '" type="button">Take down project</button>' +
+          '<button class="btn small ghost" data-act="dismiss" data-id="' + p.id + '" type="button">Dismiss report</button>');
+      }).join('');
+    }).catch(function () {
+      var status = document.getElementById('admin-status');
+      status.hidden = false;
+      status.textContent = 'Could not load. Try again.';
+    });
+  }
+  document.getElementById('unlock-btn').addEventListener('click', function () {
+    pass = document.getElementById('f-pass').value.trim();
+    if (!pass) return;
+    sessionStorage.setItem('hsf_admin', pass);
+    hide('gate'); show('panel');
+    load();
+  });
+  document.querySelectorAll('[data-view]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      view = b.dataset.view;
+      document.querySelectorAll('[data-view]').forEach(function (x) {
+        x.className = 'btn small' + (x.dataset.view === view ? '' : ' ghost');
+      });
+      load();
+    });
+  });
+  document.getElementById('admin-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    btn.disabled = true;
+    api('/api/admin', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: btn.dataset.act, id: Number(btn.dataset.id) })
+    }).then(function () { load(); }).catch(function () { btn.disabled = false; });
+  });
+  if (pass) { hide('gate'); show('panel'); load(); }
+})();
+</script>
+</body>
+</html>
