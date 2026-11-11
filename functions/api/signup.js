@@ -16,6 +16,17 @@ async function sha256(text) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+async function memberFromSession(request, env) {
+  const m = (request.headers.get('Cookie') || '').match(/(?:^|;\s*)hsf_session=([A-Za-z0-9_-]{20,100})/);
+  if (!m) return null;
+  const { results } = await env.DB.prepare(
+    `SELECT m2.id, m2.ig_handle, m2.first_name, m2.age_range FROM sessions s
+     JOIN members m2 ON m2.id = s.member_id
+     WHERE s.id = ? AND s.expires_at > datetime('now') AND m2.status = 'active'`
+  ).bind(m[1]).all();
+  return results && results.length ? results[0] : null;
+}
+
 async function verifyTurnstile(env, token, ip) {
   if (!env.TURNSTILE_SECRET) return true;
   if (!token) return false;
@@ -55,6 +66,11 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'that role is not listed on this project' }, 400);
   }
 
+
+  const member = await memberFromSession(request, env);
+  if (!member) return json({ error: 'membership required' }, 401);
+  const memberId = member.id;
+
   const ip = request.headers.get('CF-Connecting-IP') || '';
   if (!(await verifyTurnstile(env, s(body.turnstile_token, 2048), ip))) {
     return json({ error: 'turnstile failed' }, 403);
@@ -72,9 +88,9 @@ export async function onRequestPost({ request, env }) {
   if (dup && dup[0] && dup[0].n > 0) return json({ error: 'you already signed up for this role' }, 409);
 
   await env.DB.prepare(
-    `INSERT INTO responses (project_id, role, first_name, age_range, ig_handle, ip_hash)
-     VALUES (?, ?, ?, ?, ?, ?)`
-  ).bind(projectId, role, firstName, ageRange, ig || null, ipHash).run();
+    `INSERT INTO responses (project_id, role, first_name, age_range, ig_handle, ip_hash, member_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
+  ).bind(projectId, role, member.first_name, member.age_range, member.ig_handle, ipHash, memberId).run();
 
   return json({ ok: true });
-}
+    }
