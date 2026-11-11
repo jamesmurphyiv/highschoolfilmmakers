@@ -2,7 +2,8 @@
 // POST /api/projects -> new submission into the pending queue
 const GENRES = ['Drama', 'Comedy', 'Horror', 'Thriller', 'Documentary', 'Music Video', 'Animation', 'Experimental', 'Sci-Fi / Fantasy', 'Action', 'Romance', 'Other'];
 const COMPS = ['paid', 'unpaid', 'deferred'];
-const ROLES = ['director', 'producer', 'screenwriter', 'dp', 'camera-op', 'gaffer', 'sound', 'production-design', 'costume', 'makeup', 'editor', 'colorist', 'composer', 'actor', 'pa', 'script-supervisor', 'stunts', 'vfx', 'graphic-design', 'social', 'other'];
+// 'sound' and 'actor' are legacy slugs kept so older stored posts still validate.
+const ROLES = ['director', 'producer', 'screenwriter', 'dp', 'camera-op', 'gaffer', 'sound-mixer', 'boom-op', 'sound', 'production-design', 'costume', 'makeup', 'editor', 'colorist', 'composer', 'lead-actor', 'supporting-actor', 'extra', 'actor', 'pa', 'script-supervisor', 'stunts', 'vfx', 'graphic-design', 'social', 'other'];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -29,7 +30,10 @@ async function verifyTurnstile(env, token, ip) {
 export async function onRequestGet({ env }) {
   if (!env.DB) return json({ projects: [] });
   const { results } = await env.DB.prepare(
-    `SELECT id, title, logline, genre, compensation, roles, city, region, country, lat, lon, ig_handle, created_at
+    `SELECT id, title, logline, genre, compensation, roles, city, region, country, lat, lon, ig_handle, created_at,
+       (SELECT json_group_object(role, cnt) FROM (
+         SELECT role, COUNT(*) AS cnt FROM responses WHERE project_id = projects.id GROUP BY role
+       )) AS signup_counts
      FROM projects WHERE status = 'approved' ORDER BY approved_at DESC LIMIT 200`
   ).all();
   return json({ projects: results || [] });
@@ -44,7 +48,7 @@ export async function onRequestPost({ request, env }) {
   const logline = s(body.logline, 500);
   const genre = s(body.genre, 40);
   const compensation = s(body.compensation, 20);
-  const roles = (Array.isArray(body.roles) ? body.roles : []).map(r => s(r, 30)).filter(r => ROLES.includes(r)).slice(0, 21);
+  const roles = (Array.isArray(body.roles) ? body.roles : []).map(r => s(r, 30)).filter(r => ROLES.includes(r)).slice(0, 26);
   const city = s(body.city, 60);
   const region = s(body.region, 40);
   const country = s(body.country, 40) || 'US';
@@ -67,10 +71,15 @@ export async function onRequestPost({ request, env }) {
   ).bind(ipHash).all();
   if (recent && recent[0] && recent[0].n >= 5) return json({ error: 'rate limited' }, 429);
 
-  await env.DB.prepare(
-    `INSERT INTO projects (title, logline, genre, compensation, roles, city, region, country, lat, lon, ig_handle, ip_hash)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).bind(title, logline, genre, compensation, JSON.stringify(roles), city, region, country, lat, lon, ig, ipHash).run();
+  // Secret code the poster uses to view role sign-ups. Shown once, never public.
+  const raw = new Uint8Array(9);
+  crypto.getRandomValues(raw);
+  const viewCode = btoa(String.fromCharCode(...raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
-  return json({ ok: true });
+  await env.DB.prepare(
+    `INSERT INTO projects (title, logline, genre, compensation, roles, city, region, country, lat, lon, ig_handle, ip_hash, view_code)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(title, logline, genre, compensation, JSON.stringify(roles), city, region, country, lat, lon, ig, ipHash, viewCode).run();
+
+  return json({ ok: true, view_code: viewCode });
 }
