@@ -11,7 +11,6 @@
   --ink: #f7f9fb;
   --muted: #93a5b8;
   --accent: #93170f;
-  --accent-ink: #f0654a;
   --line: #25415e;
 }
 
@@ -62,7 +61,7 @@ main { max-width: 880px; margin: 0 auto; padding: 0 24px; }
   font-family: 'Yellowtail', 'Space Grotesk', cursive;
   font-size: 26px;
   line-height: 1.2;
-  color: var(--accent-ink);
+  color: var(--ink);
   margin-bottom: 20px;
 }
 
@@ -103,7 +102,7 @@ h2 {
 }
 .btn:hover { background: var(--ink); color: var(--bg); }
 .btn-solid { background: var(--accent); color: #fff; border-color: var(--accent); }
-.btn-solid:hover { background: #b5231a; border-color: #b5231a; color: #fff; }
+.btn-solid:hover { background: #7a120c; border-color: #7a120c; color: #fff; }
 
 .panel { padding: 56px 0; border-bottom: 1px solid var(--line); }
 .panel p { color: var(--muted); max-width: 620px; }
@@ -113,12 +112,12 @@ h2 {
 .panel-grid .panel { border-bottom: none; }
 @media (max-width: 720px) { .panel-grid { grid-template-columns: 1fr; gap: 0; } .panel-grid .panel { border-bottom: 1px solid var(--line); } }
 
-.text-link { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid var(--accent-ink); }
-.text-link:hover { color: var(--ink); border-color: var(--ink); }
+.text-link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--accent); }
+.text-link:hover { border-color: var(--ink); }
 
 .rules ul { list-style: none; }
 .rules li { color: var(--muted); padding: 10px 0 10px 22px; position: relative; }
-.rules li::before { content: ""; position: absolute; left: 0; top: 20px; width: 10px; height: 1px; background: var(--accent-ink); }
+.rules li::before { content: ""; position: absolute; left: 0; top: 20px; width: 10px; height: 1px; background: var(--accent); }
 
 .form-note { margin-bottom: 28px; }
 
@@ -140,10 +139,10 @@ input {
   font-family: inherit;
   font-size: 15px;
 }
-input:focus { outline: none; border-color: var(--accent-ink); }
+input:focus { outline: none; border-color: var(--ink); }
 form .btn { margin-top: 28px; }
 
-.form-done { margin-top: 20px; color: var(--accent-ink); }
+.form-done { margin-top: 20px; color: var(--ink); }
 
 .site-footer {
   display: flex;
