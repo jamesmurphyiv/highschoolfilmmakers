@@ -45,6 +45,7 @@
       <button class="btn small ghost" data-view="approved" type="button">Approved</button>
       <button class="btn small ghost" data-view="reports" type="button">Reports</button>
       <button class="btn small ghost" data-view="boosts" type="button">Boosts</button>
+      <button class="btn small ghost" data-view="members" type="button">Members</button>
     </div>
     <div id="admin-status" class="empty" hidden></div>
     <div id="admin-list"></div>
@@ -107,6 +108,15 @@
       '<div class="row">' + actions + '</div>' +
       '</div>';
   }
+  var AGE_LABELS = { '13-14': '13-14', '15-16': '15-16', '17': '17', '18-plus': '18+' };
+  function memberHtml(m, actions) {
+    return '<div class="admin-item">' +
+      '<h3>@' + esc(m.ig_handle) + '</h3>' +
+      '<p class="where">' + esc(m.first_name) + ' &middot; ' + esc(AGE_LABELS[m.age_range] || m.age_range) +
+        ' &middot; ' + esc(m.region) + ' &middot; joined ' + esc((m.created_at || '').slice(0, 10)) + '</p>' +
+      '<div class="row">' + actions + '</div>' +
+      '</div>';
+  }
   var BOOST_LABELS = { 'cast-crew': 'Cast / crew call', festival: 'Festival / screening', 'finished-film': 'Finished film', crowdfunding: 'Crowdfunding', other: 'Other' };
   function boostHtml(b, actions) {
     return '<div class="admin-item">' +
@@ -139,15 +149,24 @@
         status.hidden = false;
         status.textContent = view === 'pending' ? 'Nothing waiting for review.' :
           view === 'approved' ? 'Nothing approved yet.' :
-          view === 'boosts' ? 'No boost requests waiting.' : 'No reports.';
+          view === 'boosts' ? 'No boost requests waiting.' :
+          view === 'members' ? 'No members yet.' : 'No reports.';
         return;
       }
+      if (view === 'members' && typeof data.count === 'number') {
+        status.hidden = false;
+        status.textContent = data.count + (data.count === 1 ? ' member.' : ' members.');
+      } else {
       status.hidden = true;
       list.innerHTML = items.map(function (p) {
         if (view === 'pending') {
           return itemHtml(p,
             '<button class="btn small" data-act="approve" data-id="' + p.id + '" type="button">Approve</button>' +
             '<button class="btn small ghost" data-act="reject" data-id="' + p.id + '" type="button">Reject</button>');
+        }
+        if (view === 'members') {
+          return memberHtml(p,
+            '<button class="btn small ghost" data-act="member-remove" data-id="' + p.id + '" type="button">Remove member</button>');
         }
         if (view === 'boosts') {
           return boostHtml(p,
@@ -162,6 +181,7 @@
           '<button class="btn small ghost" data-act="remove" data-id="' + p.project_id + '" type="button">Take down project</button>' +
           '<button class="btn small ghost" data-act="dismiss" data-id="' + p.id + '" type="button">Dismiss report</button>');
       }).join('');
+      }
     }).catch(function () {
       var status = document.getElementById('admin-status');
       status.hidden = false;
