@@ -23,7 +23,7 @@
     padding: 9px 12px; background: transparent; border: 1px solid var(--line);
     color: var(--ink); font-family: inherit; font-size: 14px; min-width: 140px;
   }
-  .controls select:focus, .controls input[type="search"]:focus { outline: none; border-color: var(--accent-ink); }
+  .controls select:focus, .controls input[type="search"]:focus { outline: none; border-color: var(--ink); }
   .controls option { background: var(--bg); }
 
   #map { height: 560px; border: 1px solid var(--line); background: #121210; z-index: 0; }
@@ -37,12 +37,12 @@
   .fest-item:hover, .fest-item.active { background: #14293f; }
   .fest-item h3 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
   .fest-item .meta { font-size: 12px; color: var(--muted); }
-  .fest-item .meta .accent { color: var(--accent-ink); }
+  .fest-item .meta .accent { color: var(--ink); }
 
   .badge { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
            padding: 3px 8px; border: 1px solid var(--line); color: var(--muted); margin: 6px 8px 0 0; }
-  .badge.free { color: var(--accent-ink); border-color: var(--accent-ink); }
-  .badge.closed { color: #c96b5a; border-color: #c96b5a; }
+  .badge.free { color: var(--ink); border-color: var(--ink); }
+  .badge.closed { color: var(--muted); border-color: var(--muted); }
   .badge.soon { color: #7fb3d5; border-color: #7fb3d5; }
 
   .detail { border: 1px solid var(--line); padding: 28px; margin-top: 24px; }
@@ -52,14 +52,14 @@
   @media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
   .detail-grid .k { text-transform: uppercase; font-size: 11px; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 4px; }
   .detail-grid .v { font-size: 15px; }
-  .detail-grid .v.warn { color: #c96b5a; }
+  .detail-grid .v.warn { color: var(--ink); }
   .detail p.note { color: var(--muted); font-size: 14px; margin-bottom: 18px; max-width: 640px; }
   .detail .cta-row { margin-top: 8px; }
   .verified { font-size: 12px; color: var(--muted); margin-top: 18px; }
 
   .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
   .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
-  .legend .l-open::before { background: #e0492f; }
+  .legend .l-open::before { background: #93170f; }
   .legend .l-soon::before { background: #f7f9fb; }
   .legend .l-closed::before { background: #6b7a8d; }
 
@@ -507,7 +507,7 @@ function statusOf(f) {
   if (!f.deadline) return "closed";
   return new Date(f.deadline + "T23:59:59") >= TODAY ? "open" : "closed";
 }
-const STATUS_COLOR = { open: "#e0492f", soon: "#f7f9fb", closed: "#6b7a8d" };
+const STATUS_COLOR = { open: "#93170f", soon: "#f7f9fb", closed: "#6b7a8d" };
 const STATUS_LABEL = { open: "Open now", soon: "Opens soon / TBA", closed: "Closed this cycle" };
 
 const map = L.map("map", { scrollWheelZoom: false }).setView([39.5, -98.35], 4);
@@ -634,4 +634,4 @@ FESTIVALS.sort((a, b) => {
 applyFilters();
 </script>
 </body>
-                                                                                                                                                                                            </html>
+</html>
