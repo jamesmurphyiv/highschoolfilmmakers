@@ -94,6 +94,8 @@
         <p class="hint">This is how people reach you. It's the only contact info shown on the board.</p>
       </div>
       <div class="field">
+        <div id="secret-link" class="secret-link" hidden></div>
+        <p class="fine-print">By posting you agree to the <a href="terms.html">Terms &amp; Conditions</a>.</p>
         <div class="cf-turnstile" data-sitekey="0x4AAAAAAF9K5KyKqg8cTWhp" data-theme="dark"></div>
       </div>
       <div class="cta-row">
@@ -114,9 +116,10 @@
   var ROLES = [
     ['director', 'Director'], ['producer', 'Producer'], ['screenwriter', 'Screenwriter'],
     ['dp', 'Cinematographer / DP'], ['camera-op', 'Camera Operator'], ['gaffer', 'Gaffer / Lighting'],
-    ['sound', 'Sound Mixer / Boom Op'], ['production-design', 'Production Designer / Art'],
+    ['sound-mixer', 'Sound Mixer'], ['boom-op', 'Boom Operator'], ['production-design', 'Production Designer / Art'],
     ['costume', 'Costume'], ['makeup', 'Makeup / SFX'], ['editor', 'Editor'], ['colorist', 'Colorist'],
-    ['composer', 'Composer / Sound Designer'], ['actor', 'Actor (lead / supporting / extra)'],
+    ['composer', 'Composer / Sound Designer'], ['lead-actor', 'Lead Actor'],
+    ['supporting-actor', 'Supporting Actor'], ['extra', 'Extra'],
     ['pa', 'Production Assistant'], ['script-supervisor', 'Script Supervisor'],
     ['stunts', 'Stunt / Fight Choreographer'], ['vfx', 'VFX / Animator'],
     ['graphic-design', 'Graphic Designer'], ['social', 'Social / Marketing'], ['other', 'Other']
@@ -194,10 +197,18 @@
       if (r.status === 429) { msg('Slow down - too many posts from this network. Try again in an hour.'); return; }
       if (r.status === 403) { msg('The human check did not go through. Reload the page and try again.'); return; }
       if (!r.ok) { msg('Something went wrong sending that. Try again in a minute.'); return; }
-      f.reset();
-      document.getElementById('logline-count').textContent = '0';
-      if (window.turnstile) { try { window.turnstile.reset(); } catch (e) {} }
-      msg('Sent. Once it is reviewed and approved it will show up on the board.', true);
+      r.json().then(function (d) {
+        f.reset();
+        document.getElementById('logline-count').textContent = '0';
+        if (window.turnstile) { try { window.turnstile.reset(); } catch (e) {} }
+        msg('Sent. Once it is reviewed and approved it will show up on the board.', true);
+        if (d && d.view_code) {
+          var link = location.origin + '/responses?code=' + d.view_code;
+          var box = document.getElementById('secret-link');
+          box.innerHTML = 'Save your private responses link. When people sign up for roles on your project, this is the ONLY place you can see them. It will not be shown again:<br><a href="' + link + '">' + link + '</a>';
+          box.hidden = false;
+        }
+      });
     }).catch(function () {
       msg('Network trouble. Check your connection and try again.');
     }).finally(function () {
