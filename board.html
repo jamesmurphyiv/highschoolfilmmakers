@@ -72,6 +72,31 @@
   <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
 </footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<div id="signup-modal" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="su-title">
+    <button type="button" id="su-close" class="modal-close" aria-label="Close">&times;</button>
+    <p class="kicker">Sign up</p>
+    <h3 id="su-title">Role</h3>
+    <p class="su-project" id="su-project"></p>
+    <label for="su-name">First name</label>
+    <input id="su-name" type="text" maxlength="20" autocomplete="off" placeholder="Just your first name">
+    <label for="su-age">Age range</label>
+    <select id="su-age">
+      <option value="">Pick one</option>
+      <option value="under-14">Under 14</option>
+      <option value="14-15">14-15</option>
+      <option value="16-17">16-17</option>
+      <option value="18-plus">18+</option>
+    </select>
+    <label for="su-ig">Instagram (optional)</label>
+    <input id="su-ig" type="text" maxlength="30" autocomplete="off" placeholder="@handle">
+    <div id="su-turnstile"></div>
+    <p id="su-msg" class="form-msg" hidden></p>
+    <button type="button" id="su-send" class="btn">Sign up for this role</button>
+    <p class="fine-print">No emails, no phone numbers. The project owner sees only what you enter here.</p>
+  </div>
+</div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <script src="board.js"></script>
 </body>
 </html>
