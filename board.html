@@ -109,6 +109,7 @@
     </select>
     <label for="su-ig">Instagram (optional)</label>
     <input id="su-ig" type="text" maxlength="30" autocomplete="off" placeholder="@handle">
+    <div id="su-gate" class="member-chip">Checking membership...</div>
     <div id="su-turnstile"></div>
     <p id="su-msg" class="form-msg" hidden></p>
     <button type="button" id="su-send" class="btn">Sign up for this role</button>
@@ -116,6 +117,7 @@
   </div>
 </div>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+<script src="hsf-member.js"></script>
 <script src="board.js"></script>
 </body>
 </html>
