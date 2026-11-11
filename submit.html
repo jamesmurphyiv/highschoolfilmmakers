@@ -134,7 +134,13 @@
 <script src="hsf-member.js"></script>
 <script>
 (function () {
-  hsfMember.gate(document.getElementById('member-gate'), function () {});
+  hsfMember.gate(document.getElementById('member-gate'), function (ok, m) {
+    if (ok && m) {
+      var igEl = document.getElementById('f-ig');
+      igEl.value = '@' + m.ig;
+      igEl.disabled = true;
+    }
+  });
   var ROLES = [
     ['director', 'Director'], ['producer', 'Producer'], ['screenwriter', 'Screenwriter'],
     ['dp', 'Cinematographer / DP'], ['camera-op', 'Camera Operator'], ['gaffer', 'Gaffer / Lighting'],
@@ -212,7 +218,7 @@
           title: title, logline: loglineVal, genre: genre, compensation: compensation,
           roles: roles, city: city, region: region, country: 'US',
           lat: loc.lat, lon: loc.lon, ig_handle: ig,
-          turnstile_token: token, member_code: hsfMember.code()
+          turnstile_token: token
         })
       });
     }).then(function (r) {
