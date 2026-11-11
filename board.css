@@ -157,3 +157,47 @@ fieldset.roles-field legend {
 .comp-paid { color: #2f9e5f; border-color: #2f9e5f; }
 .comp-unpaid { color: #f0654a; border-color: #f0654a; }
 .comp-deferred { color: var(--muted); }
+
+/* Role sign-up */
+.role-tags { margin-top: 10px; }
+button.tag.role-tag {
+  background: none; border: 1px solid rgba(240, 101, 74, .55); color: #f5f2ec;
+  font: inherit; font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: 999px; cursor: pointer;
+}
+button.tag.role-tag:hover, button.tag.role-tag:focus-visible {
+  border-color: #f0654a; background: rgba(240, 101, 74, .14); outline: none;
+}
+button.tag.role-tag .cnt {
+  display: inline-block; background: #93170f; color: #fff; border-radius: 999px;
+  padding: 1px 7px; margin-left: 6px; font-size: 11px;
+}
+.role-hint { color: rgba(245, 242, 236, .45); font-size: 12px; margin: 6px 0 0; }
+.modal {
+  position: fixed; inset: 0; z-index: 999; background: rgba(6, 12, 20, .78);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal[hidden] { display: none; }
+.modal-card {
+  position: relative; background: #12253a; border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px; padding: 26px; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto;
+}
+.modal-card h3 { color: #fff; margin: 4px 0 2px; }
+.su-project { color: rgba(245,242,236,.6); font-size: 14px; margin: 0 0 16px; }
+.modal-card label {
+  display: block; color: rgba(245,242,236,.55); font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase; margin: 12px 0 5px;
+}
+.modal-card input, .modal-card select {
+  width: 100%; background: #0d1f30; border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px; color: #f5f2ec; padding: 10px 12px; font: inherit; box-sizing: border-box;
+}
+.modal-card .btn { width: 100%; margin-top: 16px; }
+.modal-close {
+  position: absolute; top: 10px; right: 14px; background: none; border: none;
+  color: rgba(245,242,236,.6); font-size: 26px; cursor: pointer; line-height: 1;
+}
+#su-turnstile { margin-top: 14px; }
+.form-msg { font-size: 14px; margin: 12px 0 0; color: #f0654a; }
+.form-msg.ok { color: #7dc98f; }
+.fine-print { color: rgba(245,242,236,.4); font-size: 12px; margin: 12px 0 0; }
