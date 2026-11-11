@@ -213,3 +213,26 @@ form .btn { margin-top: 28px; }
   .hero-small { padding: 44px 0 32px; }
   main { padding: 0 20px; }
 }
+
+/* Membership */
+.member-chip {
+  padding: 12px 14px; border: 1px dashed rgba(240, 101, 74, .55);
+  border-radius: 10px; font-size: 14px; color: var(--muted); margin: 0 0 18px;
+}
+.member-chip.ok { border-style: solid; border-color: rgba(125, 201, 143, .55); }
+.member-chip a { color: #f0654a; }
+.member-count { color: var(--muted); font-size: 14px; letter-spacing: .04em; margin-top: 22px; }
+.member-count strong { color: #f0654a; }
+
+/* Photos + founder */
+.photo-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 40px 0 0; }
+.photo-strip figure { margin: 0; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,.09); }
+.photo-strip img { width: 100%; height: 320px; object-fit: cover; display: block; }
+.photo-credit { font-size: 11px; color: var(--muted); letter-spacing: .04em; margin: 8px 0 0; }
+.founder blockquote { font-size: clamp(19px, 2.4vw, 26px); line-height: 1.5; font-weight: 500; margin: 12px 0 18px; max-width: 46ch; }
+.founder-sig { font-size: 20px; color: var(--muted); }
+.founder-sig .script-accent { font-size: 36px; }
+@media (max-width: 760px) {
+  .photo-strip { grid-template-columns: 1fr; }
+  .photo-strip img { height: 220px; }
+}
