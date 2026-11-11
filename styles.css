@@ -61,11 +61,10 @@ main { max-width: 880px; margin: 0 auto; padding: 0 24px; }
   font-family: 'Yellowtail', 'Space Grotesk', cursive;
   font-size: 26px;
   line-height: 1.2;
-  color: var(--accent);
+  color: #f0654a;
   margin-bottom: 20px;
-  text-shadow: -1px 0 0 #f7f9fb, 1px 0 0 #f7f9fb, 0 -1px 0 #f7f9fb, 0 1px 0 #f7f9fb, -1px -1px 0 #f7f9fb, 1px -1px 0 #f7f9fb, -1px 1px 0 #f7f9fb, 1px 1px 0 #f7f9fb;
 }
-.panel .label { color: var(--accent); }
+.panel .label { color: #f0654a; }
 
 h1 {
   font-family: 'Baseball Club', 'Space Grotesk', system-ui, sans-serif;
@@ -74,8 +73,7 @@ h1 {
   font-weight: 400;
   letter-spacing: 0.02em;
   margin-bottom: 24px;
-  color: var(--accent);
-  text-shadow: -2px 0 0 #f7f9fb, 2px 0 0 #f7f9fb, 0 -2px 0 #f7f9fb, 0 2px 0 #f7f9fb, -2px -2px 0 #f7f9fb, 2px -2px 0 #f7f9fb, -2px 2px 0 #f7f9fb, 2px 2px 0 #f7f9fb;
+  color: var(--ink);
 }
 
 h2 {
@@ -84,8 +82,7 @@ h2 {
   margin-bottom: 14px;
   letter-spacing: 0.02em;
   font-weight: 400;
-  color: var(--accent);
-  text-shadow: -1px 0 0 #f7f9fb, 1px 0 0 #f7f9fb, 0 -1px 0 #f7f9fb, 0 1px 0 #f7f9fb, -1px -1px 0 #f7f9fb, 1px -1px 0 #f7f9fb, -1px 1px 0 #f7f9fb, 1px 1px 0 #f7f9fb;
+  color: var(--ink);
 }
 
 .lede { font-size: 18px; color: var(--muted); max-width: 560px; }
