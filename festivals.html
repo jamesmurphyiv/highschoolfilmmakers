@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Festival Map — High School Filmmakers</title>
+<meta name="description" content="An interactive map of film festivals that accept high school filmmakers: deadlines, fees, eligibility and submission links.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Yellowtail&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  main.fest-main { max-width: 1200px; }
+  .fest-layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; padding-bottom: 56px; }
+  @media (max-width: 900px) { .fest-layout { grid-template-columns: 1fr; } }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; padding: 28px 0 20px; }
+  .controls .field { display: flex; flex-direction: column; gap: 6px; }
+  .controls label { margin: 0; font-size: 11px; }
+  .controls select, .controls input[type="search"] {
+    padding: 9px 12px; background: transparent; border: 1px solid var(--line);
+    color: var(--ink); font-family: inherit; font-size: 14px; min-width: 140px;
+  }
+  .controls select:focus, .controls input[type="search"]:focus { outline: none; border-color: var(--ink); }
+  .controls option { background: var(--bg); }
+
+  #map { height: 560px; border: 1px solid var(--line); background: #121210; z-index: 0; }
+  @media (max-width: 900px) { #map { height: 420px; } }
+  .leaflet-container { font-family: inherit; }
+  .map-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  .fest-list { border: 1px solid var(--line); max-height: 560px; overflow-y: auto; }
+  .fest-item { padding: 14px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .fest-item:last-child { border-bottom: none; }
+  .fest-item:hover, .fest-item.active { background: #14293f; }
+  .fest-item h3 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+  .fest-item .meta { font-size: 12px; color: var(--muted); }
+  .fest-item .meta .accent { color: var(--ink); }
+
+  .badge { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+           padding: 3px 8px; border: 1px solid var(--line); color: var(--muted); margin: 6px 8px 0 0; }
+  .badge.free { color: var(--ink); border-color: var(--ink); }
+  .badge.closed { color: var(--muted); border-color: var(--muted); }
+  .badge.soon { color: #7fb3d5; border-color: #7fb3d5; }
+
+  .detail { border: 1px solid var(--line); padding: 28px; margin-top: 24px; }
+  .detail h2 { margin-bottom: 4px; }
+  .detail .where { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+  .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 32px; margin-bottom: 18px; }
+  @media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
+  .detail-grid .k { text-transform: uppercase; font-size: 11px; letter-spacing: 0.14em; color: var(--muted); margin-bottom: 4px; }
+  .detail-grid .v { font-size: 15px; }
+  .detail-grid .v.warn { color: var(--ink); }
+  .detail p.note { color: var(--muted); font-size: 14px; margin-bottom: 18px; max-width: 640px; }
+  .detail .cta-row { margin-top: 8px; }
+  .verified { font-size: 12px; color: var(--muted); margin-top: 18px; }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .legend .l-open::before { background: #93170f; }
+  .legend .l-soon::before { background: #f7f9fb; }
+  .legend .l-closed::before { background: #6b7a8d; }
+
+  .results-count { color: var(--muted); font-size: 13px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="find.html">Find Your People</a>
+    <a href="resources.html">Resources</a>
+    <a href="festivals.html" aria-current="page">Festivals</a>
+    <a href="about.html">About</a>
+  </nav>
+</header>
+
+<main class="fest-main">
+  <section class="hero-small hero" style="border-bottom:none; padding-bottom: 24px;">
+    <p class="label">Festival map</p>
+    <h1>Festivals that actually take high school films.</h1>
+    <p class="lede">Every festival below accepts work made by high schoolers. Click a pin or a name for deadlines, fees, eligibility and the submission link. Data last verified November 10, 2026 &mdash; festivals change their terms, so always confirm on the official page before you submit.</p>
+    <div class="legend">
+      <span class="l-open">Submissions open</span>
+      <span class="l-soon">Opens soon / next cycle TBA</span>
+      <span class="l-closed">Closed for this cycle</span>
+    </div>
+  </section>
+
+  <section class="controls" id="controls">
+    <div class="field">
+      <label for="q">Search</label>
+      <input type="search" id="q" placeholder="Name, city, state...">
+    </div>
+    <div class="field">
+      <label for="f-status">Deadline</label>
+      <select id="f-status">
+        <option value="">All</option>
+        <option value="open">Open now</option>
+        <option value="soon">Opens soon / TBA</option>
+        <option value="closed">Closed this cycle</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-fee">Entry fee</label>
+      <select id="f-fee">
+        <option value="">All</option>
+        <option value="free">Free</option>
+        <option value="low">$1&ndash;25</option>
+        <option value="mid">$26&ndash;50</option>
+        <option value="high">$51+</option>
+        <option value="unknown">Not published</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-who">Who can enter</label>
+      <select id="f-who">
+        <option value="">All</option>
+        <option value="hs">High schoolers only</option>
+        <option value="youth">Youth (incl. HS)</option>
+        <option value="student">Any student (incl. HS)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-reach">Where you must be from</label>
+      <select id="f-reach">
+        <option value="">All</option>
+        <option value="intl">Anywhere (US &amp; international)</option>
+        <option value="state">One state only</option>
+        <option value="regional">One region only</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-region">Region</label>
+      <select id="f-region">
+        <option value="">All</option>
+        <option value="Northeast">Northeast</option>
+        <option value="South">South</option>
+        <option value="Midwest">Midwest</option>
+        <option value="West">West</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-genre">Genre / format</label>
+      <select id="f-genre">
+        <option value="">All</option>
+        <option value="Narrative">Narrative</option>
+        <option value="Documentary">Documentary</option>
+        <option value="Animation">Animation</option>
+        <option value="Experimental">Experimental</option>
+        <option value="Music Video">Music Video</option>
+        <option value="Horror/Genre">Horror / Sci-Fi</option>
+        <option value="PSA/Journalism">PSA / Journalism</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="fest-layout">
+    <div>
+      <div class="fest-list" id="list"></div>
+    </div>
+    <div>
+      <div id="map"></div>
+      <p class="map-note">Map data &copy; <a class="text-link" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, tiles &copy; <a class="text-link" href="https://www.esri.com" target="_blank" rel="noopener">Esri</a> and contributors.</p>
+    </div>
+  </section>
+
+  <section class="detail" id="detail" hidden></section>
+</main>
+
+<footer class="site-footer">
+  <span>HSF &mdash; a network for high school filmmakers</span>
+  <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const TODAY = new Date();
+const VERIFIED = "November 10, 2026";
+
+const FESTIVALS = [
+  {
+    id: "aahsff", name: "All American High School Film Festival",
+    city: "New York", state: "NY", lat: 40.7128, lon: -74.0060, region: "Northeast",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "hs", whoLabel: "High school or younger when the film was made (middle school OK; recent grads OK if the film was made in HS)",
+    feeMin: 0, feeNote: "Free until Mar 1, 2027. Then $20-25 regular (Apr 26), $45 late (May 24), $65 final (Jul 2).",
+    deadline: "2027-03-01", deadlineNote: "Free deadline Mar 1, 2027 - final Jul 2, 2027",
+    event: "October 22-24, 2027 in NYC",
+    length: "Up to 20 min (middle school category 5 min)",
+    genres: ["Narrative","Documentary","Animation","Experimental","Horror/Genre","Music Video","PSA/Journalism"],
+    site: "https://www.hsfilmfest.com/rulesandcategories",
+    submit: "https://filmfreeway.com/hsfilmfest", submitLabel: "Submit on FilmFreeway",
+    note: "The biggest high-school-only festival in the country. Categories include drama, comedy, documentary, animation, horror/sci-fi, music video, broadcast journalism and more. Submit by March 1 and entry is free."
+  },
+  {
+    id: "nffty", name: "NFFTY (National Film Festival for Talented Youth)",
+    city: "Seattle", state: "WA", lat: 47.6061, lon: -122.3328, region: "West",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "youth", whoLabel: "Directors 24 and under when the film was made; special awards for ages 15-18 and 14 & under",
+    feeMin: 30, feeNote: "$30 early (Aug 7) / $40 (Sep 18) / $50 (Oct 30) / $60 final (Dec 11, 2026). 50% discount codes for BIPOC and disability stories; educator discounts.",
+    deadline: "2026-12-11", deadlineNote: "Final deadline Dec 11, 2026 for NFFTY 2027",
+    event: "April 1-4, 2027 in Seattle",
+    length: "Shorts under 40 min; episodic under 60 min",
+    genres: ["Narrative","Documentary","Animation","Experimental","Music Video"],
+    site: "https://www.nffty.org/submit",
+    submit: "https://www.nffty.org/submit", submitLabel: "Submit via nffty.org",
+    note: "The world's largest and most influential festival for filmmakers 24 and under. Films must be completed after December 2025. No PSAs, commercials or trailers."
+  },
+  {
+    id: "cineyouth", name: "CineYouth Festival (Cinema/Chicago)",
+    city: "Chicago", state: "IL", lat: 41.8833, lon: -87.6324, region: "Midwest",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "youth", whoLabel: "Directors 22 and younger when the film was completed (23 OK if finished while 22)",
+    feeMin: 15, feeNote: "$15 earlybird (Jan 4, 2027) / $20 regular (Feb 1) / $20 late (Feb 15). 50% discount codes for BIPOC filmmakers and filmmakers with disabilities.",
+    deadline: "2027-01-04", deadlineNote: "Earlybird Jan 4, 2027 - late deadline Feb 15, 2027",
+    event: "April 23-25, 2027 at FACETS, Chicago",
+    length: "15 minutes or less including credits",
+    genres: ["Narrative","Documentary","Animation","Experimental","Horror/Genre","Music Video"],
+    site: "https://www.chicagofilmfestival.com/cineyouth/",
+    submit: "https://filmfreeway.com/CineYouthFestival", submitLabel: "Submit on FilmFreeway",
+    note: "Run by the Chicago International Film Festival. Winning films screen at the main festival's Best of the Fest. Put your age at completion in the synopsis."
+  },
+  {
+    id: "futurewave", name: "SIFF FutureWave Shorts Competition",
+    city: "Seattle", state: "WA", lat: 47.6130, lon: -122.3415, region: "West",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "youth", whoLabel: "Filmmakers 18 and under at time of submission; proof of age required",
+    feeMin: 30, feeNote: "$30 last cycle - waived for Washington State filmmakers.",
+    deadline: null, deadlineNote: "2027 cycle not yet posted; deadline is typically late January",
+    statusOverride: "soon",
+    event: "During the Seattle International Film Festival in May (2027 dates TBA)",
+    length: "Shorts (see SIFF guidelines)",
+    genres: ["Narrative","Documentary","Animation","Experimental"],
+    site: "https://www.siff.net/programs-and-events/education/at-the-festival/futurewave-shorts-competition",
+    submit: "https://www.siff.net/programs-and-events/education/at-the-festival/futurewave-shorts-competition", submitLabel: "Details on siff.net",
+    note: "Youth shorts competition inside SIFF, with the Wavemaker Award for Excellence in Youth Filmmaking. Watch the page for the 2027 call."
+  },
+  {
+    id: "ssof", name: "The Palm Beaches Student Showcase of Films",
+    city: "West Palm Beach", state: "FL", lat: 26.7145, lon: -80.0549, region: "South",
+    reach: "state", reachLabel: "Florida students only",
+    who: "student", whoLabel: "Florida high school and college students (HS-specific categories); film completed within the last 12 months",
+    feeMin: 0, feeNote: "Free.",
+    deadline: "2027-02-01", deadlineNote: "Submissions close Feb 1, 2027",
+    event: "April 30, 2027 at the Maltz Jupiter Theatre",
+    length: "HS feature/short up to 30 min; doc 5-15 min; music video 5 min; PSAs 30-60 sec",
+    genres: ["Narrative","Documentary","Animation","Music Video","PSA/Journalism"],
+    site: "https://www.pbfilm.com/SSOF",
+    submit: "https://filmfreeway.com/StudentShowcaseofFilms", submitLabel: "Submit on FilmFreeway",
+    note: "Florida's largest student film competition, free to enter, with over $30,000 in scholarships and cash awards (HS short first place $2,000). Also screenwriting and poster design."
+  },
+  {
+    id: "indyshorts", name: "Indy Shorts - High School Film Competition",
+    city: "Indianapolis", state: "IN", lat: 39.7691, lon: -86.1580, region: "Midwest",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "hs", whoLabel: "Directors ages 14-19 who were in high school (not yet university) when the film was completed; graduated no earlier than 2025. Indiana students use the Indiana Spotlight category.",
+    feeMin: 0, feeNote: "Free.",
+    deadline: "2027-04-04", deadlineNote: "Submissions close Apr 4, 2027 (per heartlandfilm.org)",
+    event: "July 20-25, 2027 in Indianapolis",
+    length: "15 min 59 sec max including credits; documentary or narrative, live-action or animated",
+    genres: ["Narrative","Documentary","Animation"],
+    site: "https://heartlandfilm.org/submit",
+    submit: "https://filmfreeway.com/heartlandfilmindyshorts", submitLabel: "Submit on FilmFreeway",
+    note: "Run by Heartland Film inside the Academy Award-qualifying Indy Shorts festival. $2,500 Summer White Lynch Memorial grand prize. Student ID or proof of enrollment required."
+  },
+  {
+    id: "westflix", name: "Westflix (Harvard-Westlake)",
+    city: "Los Angeles (Studio City)", state: "CA", lat: 34.1436, lon: -118.3953, region: "West",
+    reach: "state", reachLabel: "California students only",
+    who: "hs", whoLabel: "California high school students, grades 9-12 (recent grads OK if the film was made in HS)",
+    feeMin: 0, feeNote: "Free.",
+    deadline: "2026-12-01", deadlineNote: "Regular Dec 1, 2026 - late Jan 1, 2027",
+    event: "March 5-6, 2027: screening at the Paramount Theater, Paramount Studios + workshop day at Harvard-Westlake",
+    length: "10 minutes maximum",
+    genres: ["Narrative","Documentary","Animation","Experimental","Music Video"],
+    site: "https://www.westflixfilmfestival.com/",
+    submit: "https://filmfreeway.com/HarvardWestlakeFilmFestival", submitLabel: "Submit on FilmFreeway",
+    note: "Student-run festival for California teens, now hosted at Paramount Pictures Studios. Generative AI for scripts/imagery/voices/music is not permitted."
+  },
+  {
+    id: "gsff", name: "Garden State Film Festival (student categories)",
+    city: "Asbury Park / Cranford", state: "NJ", lat: 40.2204, lon: -74.0118, region: "Northeast",
+    reach: "intl", reachLabel: "Open to all, with NJ-only Home Grown categories",
+    who: "student", whoLabel: "Student categories for graduate, college, and high school or younger. Student ID required. NJ Home Grown: NJ HS students, 75% shot in NJ.",
+    feeMin: 10, feeNote: "HS/younger films $10 early / $15 regular / $25 final.",
+    deadline: null, deadlineNote: "2027 edition closed Nov 1, 2026. 2028 cycle opens ~May 2027. NJ 'Reel Jersey' hometown doc: deadline ~Jan 8, free with waiver code on FilmFreeway.",
+    event: "March 18-21, 2027 in Cranford & Asbury Park",
+    length: "Varies by category; Reel Jersey docs 5 min max",
+    genres: ["Narrative","Documentary","Animation"],
+    site: "https://www.gsff.org/what-to-know/call-for-entries/",
+    submit: "https://filmfreeway.com/Gardenstatefilmfestival", submitLabel: "Submit on FilmFreeway",
+    note: "New Jersey's largest festival. HS films are exempt from the NJ premiere requirement. No profanity in HS submissions. Awards presented at a black-tie dinner."
+  },
+  {
+    id: "montclair", name: "Montclair Film - Emerging Filmmaker Competition",
+    city: "Montclair", state: "NJ", lat: 40.8168, lon: -74.2212, region: "Northeast",
+    reach: "state", reachLabel: "New Jersey students only",
+    who: "hs", whoLabel: "New Jersey residents in grades 6-12. Storytellers (gr 6-9) up to 4 min; Visionaries (gr 10-12) up to 5 min.",
+    feeMin: null, feeNote: "Entry fee not published on the official pages - check FilmFreeway when registration opens.",
+    deadline: "2027-04-23", deadlineNote: "Registration opens Dec 4, 2026; submissions due Apr 23, 2027",
+    statusOverride: "soon",
+    event: "Red-carpet award ceremony June 2027",
+    length: "4-5 minutes max by division",
+    genres: ["Narrative","Documentary","Animation","Experimental","Horror/Genre"],
+    site: "https://www.montclairfilm.org/education/emerging-filmmakers-competition/",
+    submit: "https://filmfreeway.com/MontclairFilm_EFC", submitLabel: "Submit on FilmFreeway",
+    note: "NJ-only competition from Montclair Film. Awards for drama, comedy, documentary, horror, animation, experimental and social impact, plus a $500 grand prize and the Shine Global Resilience Award ($500)."
+  },
+  {
+    id: "daft", name: "Michigan Student Film Festival (DAFT)",
+    city: "Detroit", state: "MI", lat: 42.3297, lon: -83.0425, region: "Midwest",
+    reach: "state", reachLabel: "Michigan students only",
+    who: "hs", whoLabel: "Michigan K-12 students; Senior Division is grades 9-12 (last year's grads OK for pre-graduation work)",
+    feeMin: 15, feeNote: "$15 per entry (membership and bulk deals available).",
+    deadline: "2027-03-25", deadlineNote: "Entries due Mar 25, 2027",
+    event: "April 24, 2027 at the Detroit Film Theatre, Detroit Institute of Arts",
+    length: "No limit, but judges review a 5-minute excerpt",
+    genres: ["Narrative","Documentary","Animation","Music Video","PSA/Journalism"],
+    site: "https://daftonline.org/festival/",
+    submit: "https://filmfreeway.com/MichiganStudentFilmFestival", submitLabel: "Submit on FilmFreeway",
+    note: "Running since 1969 - one of the oldest student film festivals in the country. Every entry gets judges' feedback; Official Selections screen at the DIA."
+  },
+  {
+    id: "damshort", name: "Dam Short Film Festival (student category)",
+    city: "Boulder City", state: "NV", lat: 35.9782, lon: -114.8345, region: "West",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "student", whoLabel: "Student category: film made while the director was enrolled in school, college or university (HS counts)",
+    feeMin: 25, feeNote: "Students $25 all deadlines ($30 at final late).",
+    deadline: null, deadlineNote: "2027 edition closed Oct 31, 2026. Next cycle opens ~March 2027.",
+    event: "February 15-21, 2027 in Boulder City",
+    length: "Up to 40 minutes",
+    genres: ["Narrative","Documentary","Animation","Experimental","Horror/Genre"],
+    site: "https://damshortfilm.org/submit/",
+    submit: "https://filmfreeway.com/DSFF26", submitLabel: "Submit on FilmFreeway",
+    note: "Low fees, no premiere requirement, any year of production. All student films compete for the Best Student award."
+  },
+  {
+    id: "sidewalk", name: "Sidewalk Film Festival - K-12 Student Short",
+    city: "Birmingham", state: "AL", lat: 33.5186, lon: -86.8104, region: "South",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "hs", whoLabel: "Key creative team members enrolled K-12 at time of production; include school info in the submission",
+    feeMin: 20, feeNote: "$20 flat at every deadline for the K-12 category.",
+    deadline: "2027-05-21", deadlineNote: "Special Student Deadline May 21, 2027 (regular tiers end Apr 30)",
+    event: "August 23-29, 2027 in Birmingham",
+    length: "Under 40 minutes",
+    genres: ["Narrative","Documentary","Animation","Experimental"],
+    site: "https://www.sidewalkfest.com/",
+    submit: "https://filmfreeway.com/sidewalkfilm", submitLabel: "Submit on FilmFreeway",
+    note: "K-12 films are judged only against each other, and Sidewalk's teen Youth Board helps screen them. MovieMaker Top 25 coolest festival."
+  },
+  {
+    id: "giff", name: "Gasparilla Int'l Film Festival - High School Competition",
+    city: "Tampa", state: "FL", lat: 27.9517, lon: -82.4588, region: "South",
+    reach: "regional", reachLabel: "Tampa Bay area counties only",
+    who: "hs", whoLabel: "High school students in Hillsborough, Pinellas, Pasco, Hernando, Polk, Manatee or Sarasota counties",
+    feeMin: 25, feeNote: "$25 earlybird / $30 regular (Dec 1) / $35 late (Jan 1) / $40 extended (Jan 15, 2027).",
+    deadline: "2027-01-15", deadlineNote: "Extended deadline Jan 15, 2027",
+    event: "April 1-4, 2027 in Tampa",
+    length: "2 to 10 minutes",
+    genres: ["Narrative","Documentary","Animation","Experimental"],
+    site: "https://www.gasparillafilmfestival.com/",
+    submit: "https://filmfreeway.com/GasparillaFilmFestival", submitLabel: "Submit on FilmFreeway",
+    note: "Tampa Bay's biggest festival, with a dedicated HS competition and $80,000+ in scholarships awarded to date. Proof of enrollment may be required; minors may need parent/guardian authorization."
+  },
+  {
+    id: "myhero", name: "MY HERO International Film Festival",
+    city: "Laguna Beach", state: "CA", lat: 33.5462, lon: -117.7820, region: "West",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "student", whoLabel: "Students from elementary through college (separate student prize tiers)",
+    feeMin: 0, feeNote: "Free for students (via the student submission form / waiver code by email).",
+    deadline: null, deadlineNote: "2026 closed Sep 1, 2026. 2027 submissions reopen in January 2027.",
+    statusOverride: "soon",
+    event: "Winners announced ~December; 2026 festival anticipated December 2026",
+    length: "10 minutes and under",
+    genres: ["Narrative","Documentary","Animation","Experimental","Music Video"],
+    site: "https://myhero.com/festival-information",
+    submit: "https://filmfreeway.com/MYHEROIFF", submitLabel: "Submit on FilmFreeway",
+    note: "Theme: heroes making positive change in your community or the world. The WOJ Youth Reporter Award adds up to $2,000 in prizes for student reporters."
+  },
+  {
+    id: "svjr", name: "Sun Valley Film Festival - SVJR Film Competition",
+    city: "Ketchum", state: "ID", lat: 43.6807, lon: -114.3637, region: "West",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "hs", whoLabel: "Filmmakers who were 18 or younger when they directed the film",
+    feeMin: 1, feeNote: "$1 entry.",
+    deadline: null, deadlineNote: "2026 edition closed Oct 26, 2026. Next cycle opens ~July 2027.",
+    event: "December 2-6, 2026 at the Argyros Performing Arts Center (2026 finalists already announced)",
+    length: "10 minutes maximum",
+    genres: ["Narrative","Documentary","Animation","Experimental"],
+    site: "https://www.sunvalleyfilmfestival.org/svjr",
+    submit: "https://filmfreeway.com/Sun_Valley_Junior_Film_Competition", submitLabel: "Submit on FilmFreeway",
+    note: "Hot Shot Award winner screens before a packed house at the Argyros; separate Gem State Jr award for Idaho films. Judges include Academy Award and Emmy winners."
+  },
+  {
+    id: "austin", name: "Austin Film Festival - Young Filmmakers Competition",
+    city: "Austin", state: "TX", lat: 30.2672, lon: -97.7431, region: "South",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "hs", whoLabel: "Ages 13-18; must have been in middle or high school during production. Proof of enrollment required.",
+    feeMin: 0, feeNote: "Free.",
+    deadline: null, deadlineNote: "2026 edition closed Aug 29, 2026. Next cycle opens ~February 2027.",
+    event: "Young Filmmakers Showcase during Austin Film Festival (late October)",
+    length: "12 minutes or less",
+    genres: ["Narrative","Documentary","Animation"],
+    site: "https://austinfilmfestival.com/yfp/competition/",
+    submit: "https://filmfreeway.com/AustinFilmFestivalYFC", submitLabel: "Submit on FilmFreeway",
+    note: "Free to enter, no entry limit. The Jury Award winner gets up to $500 travel reimbursement, a hotel stay and two festival badges."
+  },
+  {
+    id: "nashfilm", name: "Nashville Film Festival - NextGen & student categories",
+    city: "Nashville", state: "TN", lat: 36.1627, lon: -86.7816, region: "South",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "youth", whoLabel: "NextGen: directors 25 and under when the film was completed (can be 26 now), film under 25 min; proof of age required",
+    feeMin: null, feeNote: "Student categories priced at a discounted rate - exact fees on FilmFreeway.",
+    deadline: null, deadlineNote: "2026 edition closed Jun 15, 2026. Next cycle opens ~January 2027.",
+    event: "September (annual; 2026 ran Sep 24-30)",
+    length: "NextGen films under 25 minutes",
+    genres: ["Narrative","Documentary","Animation"],
+    site: "https://nashvillefilmfestival.org/2026-festival-entries/",
+    submit: "https://filmfreeway.com/NashFilm", submitLabel: "Submit on FilmFreeway",
+    note: "One of the oldest festivals in the US, Oscar-qualifying for shorts. Tennessee premiere required, so plan your festival run around it."
+  },
+  {
+    id: "azshowcase", name: "Arizona Student Film Showcase",
+    city: "Tucson", state: "AZ", lat: 32.2540, lon: -110.9742, region: "West",
+    reach: "state", reachLabel: "Arizona students only",
+    who: "hs", whoLabel: "Arizona high school students, grades 9-12. You must hold two of four key roles (producer, director, writer, DP/editor). One film per director.",
+    feeMin: 0, feeNote: "Free.",
+    deadline: "2027-03-07", deadlineNote: "Earlybird Nov 15, 2026 - regular Jan 31, 2027 - final Mar 7, 2027",
+    event: "May 1, 2027 at The Screening Room, 127 E Congress St, Tucson",
+    length: "4 to 10 minutes including credits; PG-13 or milder",
+    genres: ["Narrative","Documentary","Animation","Experimental"],
+    site: "https://www.soazfilm.org/arizona-student-film-showcase",
+    submit: "https://filmfreeway.com/ArizonaStudentFilmShowcase2026", submitLabel: "Submit on FilmFreeway",
+    note: "Statewide showcase with an awards ceremony judged by industry professionals and instructors. No professional crews."
+  },
+  {
+    id: "ycam", name: "Y-CAM Film Festival at DCIFF",
+    city: "Washington", state: "DC", lat: 38.9073, lon: -77.0369, region: "Northeast",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "hs", whoLabel: "Current high school students worldwide (school ID required); 2026 HS leavers can submit films completed before leaving",
+    feeMin: 0, feeNote: "Free until Dec 17, 2026; $20 for late submissions (Jan 6, 2027).",
+    deadline: "2026-12-17", deadlineNote: "Regular (free) Dec 17, 2026 - late ($20) Jan 6, 2027",
+    event: "March 6-7, 2027 at Angelika Pop-Up, Union Market, Washington DC",
+    length: "Up to 20 minutes",
+    genres: ["Narrative","Documentary","Animation","Music Video","Experimental"],
+    site: "https://www.y-cam.org/",
+    submit: "https://filmfreeway.com/Y-CAM", submitLabel: "Submit on FilmFreeway",
+    note: "Two-day standalone high school festival inside the DC Independent Film Festival ecosystem. If your film is selected they genuinely expect you to attend."
+  },
+  {
+    id: "connecther", name: "ConnectHER Film Festival",
+    city: "Austin", state: "TX", lat: 30.2711, lon: -97.7437, region: "South",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "youth", whoLabel: "Filmmakers 13-25 at submission date (any gender; the film's topic must address issues affecting women and girls). Minors need parental consent.",
+    feeMin: null, feeNote: "Entry fee not stated on the official pages - confirm on the submit page.",
+    deadline: null, deadlineNote: "2026 closed Oct 15, 2026. Next cycle opens July 1, 2027.",
+    event: "April 17, 2027 (awards event); gallery goes live Dec 1, 2026",
+    length: "3-6 minutes (animation 2-6)",
+    genres: ["Narrative","Documentary","Animation"],
+    site: "https://connectherfilmfest.org/",
+    submit: "https://connectherfilmfest.org/submit/", submitLabel: "Submit on connectherfilmfest.org",
+    note: "Short films about issues shaping the lives of women and girls - education, health, climate justice, economic inequality and more. $345K+ awarded in scholarships across 96 countries. Event location beyond 'Austin, TX' not confirmed."
+  },
+  {
+    id: "sunscreen", name: "Sunscreen Film Festival (Best High School Student Short)",
+    city: "St. Petersburg", state: "FL", lat: 27.7671, lon: -82.6384, region: "South",
+    reach: "intl", reachLabel: "Open nationwide & international",
+    who: "student", whoLabel: "HS filmmakers compete for the Best High School Student Short award; submit your short with the student rate",
+    feeMin: 40, feeNote: "Student rate $40-90 depending on deadline tier (final Jan 25, 2027).",
+    deadline: "2027-01-25", deadlineNote: "Final deadline Jan 25, 2027",
+    event: "April 29 - May 2, 2027 at AMC Sundial, St. Petersburg",
+    length: "Shorts under 25 minutes",
+    genres: ["Narrative","Documentary","Animation","Experimental","Horror/Genre"],
+    site: "https://www.sunscreenfilmfestival.com/",
+    submit: "https://filmfreeway.com/sunscreenfilmfestival", submitLabel: "Submit on FilmFreeway",
+    note: "Juried award for Best High School Student Short (plus Best College Student Short). There is no separate HS submission category - enter a short with the student discount."
+  },
+  {
+    id: "catalina", name: "Catalina Film Festival - High School Student Short",
+    city: "Avalon, Catalina Island", state: "CA", lat: 33.3428, lon: -118.3282, region: "West",
+    reach: "intl", reachLabel: "Open worldwide",
+    who: "hs", whoLabel: "Films made while enrolled in high school (worldwide). Under-18 filmmakers must have a parent or guardian submit on their behalf.",
+    feeMin: 25, feeNote: "Tiered waves $25-80; cheaper the earlier you submit (first wave Oct 31, 2026; final Jul 24, 2027).",
+    deadline: "2027-07-24", deadlineNote: "Rolling waves Oct 31, 2026 - Jul 24, 2027",
+    event: "September 24-26, 2027 at the Avalon Theatre, Catalina Island",
+    length: "1-40 minutes (15 and under preferred)",
+    genres: ["Narrative","Documentary","Animation","Experimental"],
+    site: "https://catalinafilm.org/submissions/",
+    submit: "https://filmfreeway.com/CatalinaFilm", submitLabel: "Submit on FilmFreeway",
+    note: "Destination festival on Catalina Island with a dedicated worldwide High School Student Short category. MovieMaker '50 Film Festivals Worth the Entry Fee'."
+  }
+];
+
+function feeBucket(f) {
+  if (f.feeMin === null || f.feeMin === undefined) return "unknown";
+  if (f.feeMin === 0) return "free";
+  if (f.feeMin <= 25) return "low";
+  if (f.feeMin <= 50) return "mid";
+  return "high";
+}
+function statusOf(f) {
+  if (f.statusOverride) return f.statusOverride;
+  if (!f.deadline) return "closed";
+  return new Date(f.deadline + "T23:59:59") >= TODAY ? "open" : "closed";
+}
+const STATUS_COLOR = { open: "#93170f", soon: "#f7f9fb", closed: "#6b7a8d" };
+const STATUS_LABEL = { open: "Open now", soon: "Opens soon / TBA", closed: "Closed this cycle" };
+
+const map = L.map("map", { scrollWheelZoom: false }).setView([39.5, -98.35], 4);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+  attribution: 'Tiles &copy; <a href="https://www.esri.com">Esri</a> &mdash; Esri, DeLorme, NAVTEQ &mdash; map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  maxZoom: 18
+}).addTo(map);
+
+const markers = {};
+function markerFor(f) {
+  const st = statusOf(f);
+  return L.circleMarker([f.lat, f.lon], {
+    radius: 8, color: "#0d1f30", weight: 1.5,
+    fillColor: STATUS_COLOR[st], fillOpacity: 0.95
+  }).on("click", () => select(f.id));
+}
+FESTIVALS.forEach(f => { markers[f.id] = markerFor(f).addTo(map); });
+
+const listEl = document.getElementById("list");
+const detailEl = document.getElementById("detail");
+
+function fmtDeadline(f) {
+  if (f.deadline) {
+    const d = new Date(f.deadline + "T12:00:00");
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  return null;
+}
+
+function renderList(items) {
+  let html = '<div class="results-count">' + items.length + " of " + FESTIVALS.length + " festivals</div>";
+  items.forEach(f => {
+    const st = statusOf(f);
+    const dl = fmtDeadline(f);
+    html += '<div class="fest-item" data-id="' + f.id + '">'
+      + "<h3>" + f.name + "</h3>"
+      + '<div class="meta">' + f.city + ", " + f.state
+      + ' &middot; <span class="accent">' + STATUS_LABEL[st] + "</span>"
+      + (dl ? " &middot; next deadline " + dl : "")
+      + (f.feeMin === 0 ? " &middot; Free" : "")
+      + "</div></div>";
+  });
+  listEl.innerHTML = html;
+  listEl.querySelectorAll(".fest-item").forEach(el => {
+    el.addEventListener("click", () => select(el.dataset.id));
+  });
+}
+
+function select(id) {
+  const f = FESTIVALS.find(x => x.id === id);
+  if (!f) return;
+  listEl.querySelectorAll(".fest-item").forEach(el => el.classList.toggle("active", el.dataset.id === id));
+  map.setView([f.lat, f.lon], 7, { animate: true });
+  const st = statusOf(f);
+  const dl = fmtDeadline(f);
+  const badges =
+    '<span class="badge ' + (st === "open" ? "free" : st) + '">' + STATUS_LABEL[st] + "</span>"
+    + (f.feeMin === 0 ? '<span class="badge free">Free entry</span>' : "")
+    + (f.reach === "state" || f.reach === "regional" ? '<span class="badge">' + f.reachLabel + "</span>" : "")
+    + (f.who === "hs" ? '<span class="badge">HS only</span>' : "");
+  detailEl.innerHTML =
+    "<h2>" + f.name + "</h2>"
+    + '<p class="where">' + f.city + ", " + f.state + "</p>"
+    + "<div>" + badges + "</div>"
+    + '<div class="detail-grid" style="margin-top:18px">'
+    + cell("Next deadline", dl ? dl + '<br><span style="color:var(--muted);font-size:13px">' + f.deadlineNote + "</span>" : f.deadlineNote, !dl)
+    + cell("Entry fee", f.feeNote, f.feeMin === null)
+    + cell("Who can enter", f.whoLabel)
+    + cell("Festival dates", f.event)
+    + cell("Length limit", f.length)
+    + cell("Categories / genres", f.genres.join(", ") + (f.id === "aahsff" ? ", Broadcast Journalism, Sports Feature, Micro Movie" : ""))
+    + "</div>"
+    + '<p class="note">' + f.note + "</p>"
+    + '<div class="cta-row">'
+    + '<a class="btn btn-solid" href="' + f.submit + '" target="_blank" rel="noopener">' + f.submitLabel + "</a>"
+    + '<a class="btn" href="' + f.site + '" target="_blank" rel="noopener">Official rules</a>'
+    + "</div>"
+    + '<p class="verified">Verified ' + VERIFIED + " from the festival's official pages. Confirm before submitting - festivals change terms.</p>";
+  detailEl.hidden = false;
+  function cell(k, v, warn) {
+    return '<div><div class="k">' + k + '</div><div class="v' + (warn ? " warn" : "") + '">' + v + "</div></div>";
+  }
+}
+
+function applyFilters() {
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const fs = document.getElementById("f-status").value;
+  const ff = document.getElementById("f-fee").value;
+  const fw = document.getElementById("f-who").value;
+  const fr = document.getElementById("f-reach").value;
+  const fg = document.getElementById("f-region").value;
+  const fge = document.getElementById("f-genre").value;
+  const items = FESTIVALS.filter(f => {
+    if (q && !(f.name + " " + f.city + " " + f.state).toLowerCase().includes(q)) return false;
+    if (fs && statusOf(f) !== fs) return false;
+    if (ff && feeBucket(f) !== ff) return false;
+    if (fw && f.who !== fw) return false;
+    if (fr && f.reach !== fr) return false;
+    if (fg && f.region !== fg) return false;
+    if (fge && !f.genres.includes(fge)) return false;
+    return true;
+  });
+  renderList(items);
+  Object.entries(markers).forEach(([id, m]) => {
+    const on = items.some(f => f.id === id);
+    if (on && !map.hasLayer(m)) m.addTo(map);
+    if (!on && map.hasLayer(m)) map.removeLayer(m);
+  });
+}
+["q","f-status","f-fee","f-who","f-reach","f-region","f-genre"].forEach(id => {
+  document.getElementById(id).addEventListener("input", applyFilters);
+});
+
+// Sort list: open first (by deadline), then soon, then closed
+FESTIVALS.sort((a, b) => {
+  const order = { open: 0, soon: 1, closed: 2 };
+  const sa = statusOf(a), sb = statusOf(b);
+  if (order[sa] !== order[sb]) return order[sa] - order[sb];
+  if (a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+  if (a.deadline) return -1;
+  if (b.deadline) return 1;
+  return a.name.localeCompare(b.name);
+});
+applyFilters();
+</script>
+</body>
+</html>
