@@ -61,10 +61,10 @@ main { max-width: 880px; margin: 0 auto; padding: 0 24px; }
   font-family: 'Yellowtail', 'Space Grotesk', cursive;
   font-size: 26px;
   line-height: 1.2;
-  color: var(--accent);
+  color: #f0654a;
   margin-bottom: 20px;
 }
-.panel .label { color: var(--accent); }
+.panel .label { color: #f0654a; }
 
 h1 {
   font-family: 'Baseball Club', 'Space Grotesk', system-ui, sans-serif;
