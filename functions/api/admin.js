@@ -37,6 +37,14 @@ export async function onRequestGet({ request, env }) {
        FROM boost_requests WHERE status = 'pending' ORDER BY created_at ASC LIMIT 100`).all();
     return json({ items: results || [] });
   }
+  if (view === 'members') {
+    const { results } = await env.DB.prepare(
+      `SELECT id, first_name, age_range, region, ig_handle, created_at
+       FROM members WHERE status = 'active' ORDER BY created_at ASC LIMIT 500`).all();
+    const { results: cnt } = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM members WHERE status = 'active'`).all();
+    return json({ items: results || [], count: cnt && cnt[0] ? cnt[0].n : 0 });
+  }
   return json({ error: 'unknown view' }, 400);
 }
 
@@ -58,6 +66,9 @@ export async function onRequestPost({ request, env }) {
       await env.DB.prepare(`DELETE FROM reports WHERE project_id = ?`).bind(id).run();
       await env.DB.prepare(`DELETE FROM projects WHERE id = ?`).bind(id).run();
       return json({ ok: true });
+    case 'member-remove':
+      await env.DB.prepare(`UPDATE members SET status = 'removed' WHERE id = ?`).bind(id).run();
+      return json({ ok: true });
     case 'boost-done':
       await env.DB.prepare(`UPDATE boost_requests SET status = 'done' WHERE id = ?`).bind(id).run();
       return json({ ok: true });
@@ -70,4 +81,4 @@ export async function onRequestPost({ request, env }) {
     default:
       return json({ error: 'unknown action' }, 400);
   }
-      }
+  }
