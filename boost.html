@@ -39,6 +39,7 @@
     <p class="lede">Casting call, festival selection, finished film, crowdfunding push - if it's worth the network's attention, we'll put it in front of them on Instagram. Tell us what to hype.</p>
   </section>
   <section class="panel">
+    <div id="member-gate" class="member-chip">Checking membership...</div>
     <form id="boost-form" novalidate>
       <div class="field">
         <label for="f-title">PROJECT TITLE *</label>
@@ -88,8 +89,10 @@
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
+<script src="hsf-member.js"></script>
 <script>
 (function () {
+  hsfMember.gate(document.getElementById('member-gate'), function () {});
   var f = document.getElementById('boost-form');
   var pitch = document.getElementById('f-pitch');
   pitch.addEventListener('input', function () {
@@ -116,9 +119,10 @@
     var token = tokenEl ? tokenEl.value : '';
     fetch('/api/boost', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title, pitch: pitchVal, boost_type: type, ig_handle: ig, turnstile_token: token })
+      body: JSON.stringify({ title: title, pitch: pitchVal, boost_type: type, ig_handle: ig, turnstile_token: token, member_code: hsfMember.code() })
     }).then(function (r) {
       if (r.status === 429) { msg('Slow down - try again in an hour.'); return; }
+      if (r.status === 401) { msg('Members only - join free first, then request your boost.'); return; }
       if (r.status === 403) { msg('The human check did not go through. Reload and try again.'); return; }
       if (!r.ok) { msg('Something went wrong sending that. Try again in a minute.'); return; }
       f.reset();
