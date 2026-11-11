@@ -82,6 +82,7 @@
     <a href="festivals.html" aria-current="page">Festivals</a>
     <a href="boost.html">Boost</a>
     <a href="about.html">About</a>
+    <a href="join.html" id="nav-join">Join</a>
   </nav>
 </header>
 
@@ -653,6 +654,14 @@ FESTIVALS.sort((a, b) => {
   return a.name.localeCompare(b.name);
 });
 applyFilters();
+</script>
+<script src="hsf-member.js"></script>
+<script>
+hsfMember.ready().then(function (m) {
+  if (!m) return;
+  var a = document.getElementById('nav-join');
+  if (a) { a.textContent = '@' + m.ig; a.removeAttribute('aria-current'); }
+});
 </script>
 </body>
 </html>
