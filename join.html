@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join HSF &mdash; High School Filmmakers</title>
+<meta name="description" content="Post your film project to the HSF board and find cast, crew, editors and gear near you.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="board.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="find.html">Find Your People</a>
+    <a href="resources.html">Resources</a>
+    <a href="board.html">Board</a>
+    <a href="festivals.html">Festivals</a>
+    <a href="boost.html">Boost</a>
+    <a href="join.html" aria-current="page">Join</a>
+    <a href="about.html">About</a>
+  </nav>
+</header>
+<main>
+  <section class="hero hero-small">
+    <p class="label">Join HSF</p>
+    <h1>Become a member.</h1>
+    <p class="lede">Free, 30 seconds, no email, no password. Your Instagram is your membership - post projects, sign up for roles and request boosts as <span class="script-accent">you.</span></p>
+  </section>
+  <section class="panel" id="join-panel">
+    <form id="join-form" novalidate>
+      <div class="field">
+        <label for="j-name">First name *</label>
+        <input id="j-name" type="text" maxlength="20" autocomplete="off">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="j-age">Age range *</label>
+          <select id="j-age">
+            <option value="">Pick one</option>
+            <option value="13-14">13-14</option>
+            <option value="15-16">15-16</option>
+            <option value="17">17</option>
+            <option value="18-plus">18+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="j-state">State *</label>
+          <select id="j-state"><option value="">Pick one</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="j-ig">Instagram * <span class="hint">(this is your member ID - it's how the network knows you)</span></label>
+        <input id="j-ig" type="text" maxlength="30" autocomplete="off" placeholder="@handle">
+      </div>
+      <label class="role-check" style="display:flex;gap:10px;align-items:flex-start;margin-top:14px">
+        <input id="j-agree" type="checkbox" style="margin-top:3px">
+        <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a> and I'm at least 13.</span>
+      </label>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAF9K5KyKqg8cTWhp" data-theme="dark"></div>
+      <p id="form-msg" class="form-msg" hidden></p>
+      <button class="btn btn-solid" type="submit" id="join-btn">Join free</button>
+    </form>
+    <div id="join-done" hidden>
+      <p class="label">You're in</p>
+      <h2 id="done-ig"></h2>
+      <p id="done-count"></p>
+      <div class="secret-link" style="display:block">
+        Your secret member code (kept in this browser automatically - save it somewhere too, it's how we know it's you and it will not be shown again):<br>
+        <strong id="done-code"></strong>
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="board.html">To the board</a>
+        <a class="btn" href="boost.html">Request a boost</a>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="footer-top">
+    <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="index.html">Home</a>
+      <a href="find.html">Find Your People</a>
+      <a href="resources.html">Resources</a>
+      <a href="board.html">Board</a>
+      <a href="festivals.html">Festivals</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="footer-ig" href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">@highschoolfilmmakers</a>
+  </div>
+  <div class="footer-bottom">
+    <span>HSF &mdash; a network for high school filmmakers. Made by students, for students.</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+<script src="hsf-member.js"></script>
+<script>
+(function () {
+  var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','Other / outside US'];
+  var sel = document.getElementById('j-state');
+  STATES.forEach(function (s) {
+    var o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    sel.appendChild(o);
+  });
+  function msg(text, ok) {
+    var m = document.getElementById('form-msg');
+    m.textContent = text;
+    m.className = 'form-msg' + (ok ? ' ok' : '');
+    m.hidden = false;
+  }
+  // Already a member on this browser? Say so.
+  hsfMember.verify().then(function (ig) {
+    if (ig) msg('This browser is already a member as @' + ig + '. You can just head to the board.', true);
+  });
+  document.getElementById('join-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('j-name').value.trim();
+    var age = document.getElementById('j-age').value;
+    var state = document.getElementById('j-state').value;
+    var ig = document.getElementById('j-ig').value.trim().replace(/^@/, '');
+    var agree = document.getElementById('j-agree').checked;
+    if (!name || !age || !state || !ig) { msg('Fill in every field and try again.'); return; }
+    if (!agree) { msg('Check the Terms box to join.'); return; }
+    var btn = document.getElementById('join-btn');
+    btn.disabled = true;
+    btn.textContent = 'Joining...';
+    var tokenEl = document.querySelector('[name=cf-turnstile-response]');
+    fetch('/api/join', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: name, age_range: age, region: state, ig_handle: ig, agree: true, turnstile_token: tokenEl ? tokenEl.value : '' })
+    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, status: r.status, d: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.d.ok) {
+          hsfMember.save(res.d.member_code);
+          document.getElementById('join-form').hidden = true;
+          document.getElementById('done-ig').textContent = '@' + res.d.ig;
+          document.getElementById('done-count').textContent = res.d.count ? 'Member count: ' + res.d.count + ' and growing.' : '';
+          document.getElementById('done-code').textContent = res.d.member_code;
+          document.getElementById('join-done').hidden = false;
+        } else if (res.status === 409) {
+          msg('That Instagram already joined. Your code was shown when you joined - DM @highschoolfilmmakers if you lost it.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        } else if (res.status === 429) {
+          msg('Slow down - try again in an hour.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        } else if (res.status === 403) {
+          msg('The human check did not go through. Reload and try again.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        } else {
+          msg('Something went wrong. Try again in a minute.');
+          btn.disabled = false; btn.textContent = 'Join free';
+        }
+      }).catch(function () {
+        msg('Network trouble. Check your connection and try again.');
+        btn.disabled = false; btn.textContent = 'Join free';
+      });
+  });
+})();
+</script>
+</body>
+</html>
