@@ -203,3 +203,13 @@ form .btn { margin-top: 28px; }
   .marquee-track { animation: none; }
   .panel, .panel:hover { transition: none; transform: none; }
 }
+
+/* Mobile header wrap (7-item nav) */
+@media (max-width: 760px) {
+  .site-header { flex-direction: column; align-items: flex-start; gap: 14px; padding: 16px 20px; }
+  .site-header nav { flex-wrap: wrap; gap: 10px 16px; }
+  .site-header nav a { font-size: 11px; letter-spacing: .1em; }
+  .hero { padding: 56px 0 44px; }
+  .hero-small { padding: 44px 0 32px; }
+  main { padding: 0 20px; }
+}
