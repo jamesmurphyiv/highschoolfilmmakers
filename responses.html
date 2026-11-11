@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responses &mdash; High School Filmmakers</title>
+<meta name="description" content="Who signed up for roles on your project.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="board.css">
+</head>
+<body>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="find.html">Find Your People</a>
+    <a href="resources.html">Resources</a>
+    <a href="board.html">Board</a>
+    <a href="festivals.html">Festivals</a>
+    <a href="about.html">About</a>
+  </nav>
+</header>
+<main>
+  <section class="hero hero-small">
+    <p class="kicker">Your project</p>
+    <h1 id="r-title">RESPONSES.</h1>
+    <p class="lede" id="r-sub">Everyone who signed up for a role on your project shows up here. Keep this link to yourself.</p>
+  </section>
+  <section>
+    <div id="r-status" class="empty" hidden></div>
+    <div id="r-groups"></div>
+  </section>
+</main>
+<footer class="site-footer">
+  <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
+  <span>HSF &mdash; a network for high school filmmakers</span>
+  <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
+</footer>
+<script>
+(function () {
+  var ROLE_LABELS = {
+    director: 'Director', producer: 'Producer', screenwriter: 'Screenwriter',
+    dp: 'Cinematographer / DP', 'camera-op': 'Camera Operator', gaffer: 'Gaffer / Lighting',
+    'sound-mixer': 'Sound Mixer', 'boom-op': 'Boom Operator', sound: 'Sound Mixer / Boom Op',
+    'production-design': 'Production Designer / Art', costume: 'Costume', makeup: 'Makeup / SFX',
+    editor: 'Editor', colorist: 'Colorist', composer: 'Composer / Sound Designer',
+    'lead-actor': 'Lead Actor', 'supporting-actor': 'Supporting Actor', extra: 'Extra', actor: 'Actor',
+    pa: 'Production Assistant', 'script-supervisor': 'Script Supervisor',
+    stunts: 'Stunt / Fight Choreographer', vfx: 'VFX / Animator',
+    'graphic-design': 'Graphic Designer', social: 'Social / Marketing', other: 'Other'
+  };
+  var AGE_LABELS = { 'under-14': 'Under 14', '14-15': '14-15', '16-17': '16-17', '18-plus': '18+' };
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  var status = document.getElementById('r-status');
+  var groups = document.getElementById('r-groups');
+  var code = new URLSearchParams(location.search).get('code') || '';
+  if (!code) {
+    status.hidden = false;
+    status.textContent = 'This link is missing its code. Use the exact link you got when you posted your project.';
+    return;
+  }
+  fetch('/api/responses?code=' + encodeURIComponent(code))
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (data) {
+      document.getElementById('r-title').textContent = String(data.project.title || 'RESPONSES.').toUpperCase();
+      document.getElementById('r-sub').textContent =
+        data.project.city + (data.project.region ? ', ' + data.project.region : '') +
+        ' - everyone who signed up shows up here. Keep this link to yourself.';
+      var resp = data.responses || [];
+      if (!resp.length) {
+        status.hidden = false;
+        status.textContent = 'No sign-ups yet. Share your board post and check back soon.';
+        return;
+      }
+      var byRole = {};
+      resp.forEach(function (x) { (byRole[x.role] = byRole[x.role] || []).push(x); });
+      groups.innerHTML = Object.keys(byRole).map(function (role) {
+        return '<h2 class="kicker" style="margin-top:28px">' + esc(ROLE_LABELS[role] || role) + '</h2>' +
+          byRole[role].map(function (x) {
+            var ig = String(x.ig_handle || '').replace(/^@/, '');
+            var igHtml = /^[A-Za-z0-9._]{1,30}$/.test(ig)
+              ? ' &middot; <a href="https://www.instagram.com/' + esc(ig) + '/" target="_blank" rel="noopener">@' + esc(ig) + '</a>' : '';
+            return '<p class="resp-row"><strong>' + esc(x.first_name) + '</strong> &middot; ' +
+              esc(AGE_LABELS[x.age_range] || x.age_range) + igHtml + '</p>';
+          }).join('');
+      }).join('');
+    })
+    .catch(function () {
+      status.hidden = false;
+      status.textContent = 'That link does not match a project. Check you copied the whole thing.';
+    });
+})();
+</script>
+</body>
+</html>
