@@ -8,7 +8,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Yellowtail&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
@@ -23,7 +23,7 @@
     padding: 9px 12px; background: transparent; border: 1px solid var(--line);
     color: var(--ink); font-family: inherit; font-size: 14px; min-width: 140px;
   }
-  .controls select:focus, .controls input[type="search"]:focus { outline: none; border-color: var(--accent); }
+  .controls select:focus, .controls input[type="search"]:focus { outline: none; border-color: var(--accent-ink); }
   .controls option { background: var(--bg); }
 
   #map { height: 560px; border: 1px solid var(--line); background: #121210; z-index: 0; }
@@ -34,14 +34,14 @@
   .fest-list { border: 1px solid var(--line); max-height: 560px; overflow-y: auto; }
   .fest-item { padding: 14px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
   .fest-item:last-child { border-bottom: none; }
-  .fest-item:hover, .fest-item.active { background: #161614; }
+  .fest-item:hover, .fest-item.active { background: #14293f; }
   .fest-item h3 { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
   .fest-item .meta { font-size: 12px; color: var(--muted); }
-  .fest-item .meta .accent { color: var(--accent); }
+  .fest-item .meta .accent { color: var(--accent-ink); }
 
   .badge { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
            padding: 3px 8px; border: 1px solid var(--line); color: var(--muted); margin: 6px 8px 0 0; }
-  .badge.free { color: var(--accent); border-color: var(--accent); }
+  .badge.free { color: var(--accent-ink); border-color: var(--accent-ink); }
   .badge.closed { color: #c96b5a; border-color: #c96b5a; }
   .badge.soon { color: #7fb3d5; border-color: #7fb3d5; }
 
@@ -59,16 +59,16 @@
 
   .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted); }
   .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
-  .legend .l-open::before { background: #f0c420; }
-  .legend .l-soon::before { background: #7fb3d5; }
-  .legend .l-closed::before { background: #6b6862; }
+  .legend .l-open::before { background: #e0492f; }
+  .legend .l-soon::before { background: #f7f9fb; }
+  .legend .l-closed::before { background: #6b7a8d; }
 
   .results-count { color: var(--muted); font-size: 13px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
 </style>
 </head>
 <body>
 <header class="site-header">
-  <a class="wordmark" href="index.html">HSF</a>
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
   <nav>
     <a href="index.html">Home</a>
     <a href="find.html">Find Your People</a>
@@ -507,7 +507,7 @@ function statusOf(f) {
   if (!f.deadline) return "closed";
   return new Date(f.deadline + "T23:59:59") >= TODAY ? "open" : "closed";
 }
-const STATUS_COLOR = { open: "#f0c420", soon: "#7fb3d5", closed: "#6b6862" };
+const STATUS_COLOR = { open: "#e0492f", soon: "#f7f9fb", closed: "#6b7a8d" };
 const STATUS_LABEL = { open: "Open now", soon: "Opens soon / TBA", closed: "Closed this cycle" };
 
 const map = L.map("map", { scrollWheelZoom: false }).setView([39.5, -98.35], 4);
@@ -520,7 +520,7 @@ const markers = {};
 function markerFor(f) {
   const st = statusOf(f);
   return L.circleMarker([f.lat, f.lon], {
-    radius: 8, color: "#0d0d0c", weight: 1.5,
+    radius: 8, color: "#0d1f30", weight: 1.5,
     fillColor: STATUS_COLOR[st], fillOpacity: 0.95
   }).on("click", () => select(f.id));
 }
@@ -634,4 +634,4 @@ FESTIVALS.sort((a, b) => {
 applyFilters();
 </script>
 </body>
-</html>
+                                                                                                                                                                                            </html>
