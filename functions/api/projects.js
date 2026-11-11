@@ -18,6 +18,17 @@ async function sha256(text) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+async function memberFromSession(request, env) {
+  const m = (request.headers.get('Cookie') || '').match(/(?:^|;\s*)hsf_session=([A-Za-z0-9_-]{20,100})/);
+  if (!m) return null;
+  const { results } = await env.DB.prepare(
+    `SELECT m2.id, m2.ig_handle, m2.first_name, m2.age_range FROM sessions s
+     JOIN members m2 ON m2.id = s.member_id
+     WHERE s.id = ? AND s.expires_at > datetime('now') AND m2.status = 'active'`
+  ).bind(m[1]).all();
+  return results && results.length ? results[0] : null;
+}
+
 async function verifyTurnstile(env, token, ip) {
   if (!env.TURNSTILE_SECRET) return true; // preview without secret: don't block
   if (!token) return false;
@@ -52,13 +63,19 @@ export async function onRequestPost({ request, env }) {
   const city = s(body.city, 60);
   const region = s(body.region, 40);
   const country = s(body.country, 40) || 'US';
-  const ig = s(body.ig_handle, 30).replace(/^@/, '');
+  const ig = s(body.ig_handle, 30).replace(/^@/, ''); // overridden by the member's handle below
   const lat = typeof body.lat === 'number' && Math.abs(body.lat) <= 90 ? Math.round(body.lat * 100) / 100 : null;
   const lon = typeof body.lon === 'number' && Math.abs(body.lon) <= 180 ? Math.round(body.lon * 100) / 100 : null;
 
-  if (!title || !logline || !GENRES.includes(genre) || !COMPS.includes(compensation) || !roles.length || !city || !region || !/^[A-Za-z0-9._]{1,30}$/.test(ig)) {
+  if (!title || !logline || !GENRES.includes(genre) || !COMPS.includes(compensation) || !roles.length || !city || !region) {
     return json({ error: 'invalid fields' }, 400);
   }
+
+
+  const member = await memberFromSession(request, env);
+  if (!member) return json({ error: 'membership required' }, 401);
+  const memberId = member.id;
+  const memberIg = member.ig_handle;
 
   const ip = request.headers.get('CF-Connecting-IP') || '';
   if (!(await verifyTurnstile(env, s(body.turnstile_token, 2048), ip))) {
@@ -77,9 +94,9 @@ export async function onRequestPost({ request, env }) {
   const viewCode = btoa(String.fromCharCode(...raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
   await env.DB.prepare(
-    `INSERT INTO projects (title, logline, genre, compensation, roles, city, region, country, lat, lon, ig_handle, ip_hash, view_code)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).bind(title, logline, genre, compensation, JSON.stringify(roles), city, region, country, lat, lon, ig, ipHash, viewCode).run();
+    `INSERT INTO projects (title, logline, genre, compensation, roles, city, region, country, lat, lon, ig_handle, ip_hash, view_code, member_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).bind(title, logline, genre, compensation, JSON.stringify(roles), city, region, country, lat, lon, memberIg, ipHash, viewCode, memberId).run();
 
   return json({ ok: true, view_code: viewCode });
-}
+    }
