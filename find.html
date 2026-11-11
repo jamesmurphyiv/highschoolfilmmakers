@@ -27,6 +27,7 @@
     <a href="festivals.html">Festivals</a>
     <a href="boost.html">Boost</a>
     <a href="about.html">About</a>
+    <a href="join.html" id="nav-join">Join</a>
   </nav>
 </header>
 
@@ -85,5 +86,13 @@
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
+<script src="hsf-member.js"></script>
+<script>
+hsfMember.ready().then(function (m) {
+  if (!m) return;
+  var a = document.getElementById('nav-join');
+  if (a) { a.textContent = '@' + m.ig; a.removeAttribute('aria-current'); }
+});
+</script>
 </body>
-</html>
+      </html>
