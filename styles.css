@@ -155,5 +155,6 @@ form .btn { margin-top: 28px; }
   font-size: 13px;
   color: var(--muted);
 }
+.site-footer .footer-mark { height: 30px; width: auto; display: block; }
 .site-footer a { color: var(--muted); text-decoration: none; }
 .site-footer a:hover { color: var(--ink); }
