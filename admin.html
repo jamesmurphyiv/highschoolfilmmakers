@@ -44,15 +44,29 @@
       <button class="btn small" data-view="pending" type="button">Pending</button>
       <button class="btn small ghost" data-view="approved" type="button">Approved</button>
       <button class="btn small ghost" data-view="reports" type="button">Reports</button>
+      <button class="btn small ghost" data-view="boosts" type="button">Boosts</button>
     </div>
     <div id="admin-status" class="empty" hidden></div>
     <div id="admin-list"></div>
   </section>
 </main>
 <footer class="site-footer">
-  <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
-  <span>HSF &mdash; a network for high school filmmakers</span>
-  <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
+  <div class="footer-top">
+    <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="index.html">Home</a>
+      <a href="find.html">Find Your People</a>
+      <a href="resources.html">Resources</a>
+      <a href="board.html">Board</a>
+      <a href="festivals.html">Festivals</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="footer-ig" href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">@highschoolfilmmakers</a>
+  </div>
+  <div class="footer-bottom">
+    <span>HSF &mdash; a network for high school filmmakers. Made by students, for students.</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
 </footer>
 <script>
 (function () {
@@ -93,6 +107,17 @@
       '<div class="row">' + actions + '</div>' +
       '</div>';
   }
+  var BOOST_LABELS = { 'cast-crew': 'Cast / crew call', festival: 'Festival / screening', 'finished-film': 'Finished film', crowdfunding: 'Crowdfunding', other: 'Other' };
+  function boostHtml(b, actions) {
+    return '<div class="admin-item">' +
+      '<div class="tags"><span class="pill">' + esc(BOOST_LABELS[b.boost_type] || b.boost_type) + '</span></div>' +
+      '<h3>' + esc(b.title) + '</h3>' +
+      '<p class="where">' + esc((b.created_at || '').slice(0, 10)) + '</p>' +
+      '<p class="desc">' + esc(b.pitch) + '</p>' +
+      (b.ig_handle ? '<p class="contact">IG: @' + esc(b.ig_handle) + '</p>' : '') +
+      '<div class="row">' + actions + '</div>' +
+      '</div>';
+  }
   function load() {
     api('/api/admin?view=' + view).then(function (r) {
       if (r.status === 401) {
@@ -113,7 +138,8 @@
         list.innerHTML = '';
         status.hidden = false;
         status.textContent = view === 'pending' ? 'Nothing waiting for review.' :
-          view === 'approved' ? 'Nothing approved yet.' : 'No reports.';
+          view === 'approved' ? 'Nothing approved yet.' :
+          view === 'boosts' ? 'No boost requests waiting.' : 'No reports.';
         return;
       }
       status.hidden = true;
@@ -122,6 +148,11 @@
           return itemHtml(p,
             '<button class="btn small" data-act="approve" data-id="' + p.id + '" type="button">Approve</button>' +
             '<button class="btn small ghost" data-act="reject" data-id="' + p.id + '" type="button">Reject</button>');
+        }
+        if (view === 'boosts') {
+          return boostHtml(p,
+            '<button class="btn small" data-act="boost-done" data-id="' + p.id + '" type="button">Mark boosted</button>' +
+            '<button class="btn small ghost" data-act="boost-remove" data-id="' + p.id + '" type="button">Remove</button>');
         }
         if (view === 'approved') {
           return itemHtml(p,
