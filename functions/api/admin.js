@@ -31,6 +31,12 @@ export async function onRequestGet({ request, env }) {
        ORDER BY r.created_at DESC LIMIT 100`).all();
     return json({ items: results || [] });
   }
+  if (view === 'boosts') {
+    const { results } = await env.DB.prepare(
+      `SELECT id, title, pitch, boost_type, ig_handle, created_at
+       FROM boost_requests WHERE status = 'pending' ORDER BY created_at ASC LIMIT 100`).all();
+    return json({ items: results || [] });
+  }
   return json({ error: 'unknown view' }, 400);
 }
 
@@ -52,10 +58,16 @@ export async function onRequestPost({ request, env }) {
       await env.DB.prepare(`DELETE FROM reports WHERE project_id = ?`).bind(id).run();
       await env.DB.prepare(`DELETE FROM projects WHERE id = ?`).bind(id).run();
       return json({ ok: true });
+    case 'boost-done':
+      await env.DB.prepare(`UPDATE boost_requests SET status = 'done' WHERE id = ?`).bind(id).run();
+      return json({ ok: true });
+    case 'boost-remove':
+      await env.DB.prepare(`DELETE FROM boost_requests WHERE id = ?`).bind(id).run();
+      return json({ ok: true });
     case 'dismiss':
       await env.DB.prepare(`DELETE FROM reports WHERE id = ?`).bind(id).run();
       return json({ ok: true });
     default:
       return json({ error: 'unknown action' }, 400);
   }
-}
+      }
