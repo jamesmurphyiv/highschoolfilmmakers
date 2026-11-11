@@ -1,33 +1,37 @@
-// HSF membership helper: stores the secret member code in the browser,
-// verifies it, and renders gate UI where a page needs membership.
+// HSF membership helper: session-cookie based. The cookie is HttpOnly; this
+// script only asks the server who is signed in and renders gate UI.
 (function () {
-  var KEY = 'hsf_member_code';
+  function esc(t) { return String(t).replace(/[&<>"']/g, ''); }
   window.hsfMember = {
-    code: function () { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } },
-    save: function (c) { try { localStorage.setItem(KEY, c); } catch (e) {} },
-    clear: function () { try { localStorage.removeItem(KEY); } catch (e) {} },
-    verify: function () {
-      var c = this.code();
-      if (!c) return Promise.resolve(null);
-      return fetch('/api/join?code=' + encodeURIComponent(c))
+    current: null,
+    ready: function () {
+      var self = this;
+      return fetch('/api/join?session=1', { credentials: 'same-origin' })
         .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (d) { return d && d.ok ? d.ig : null; })
-        .catch(function () { return null; });
+        .then(function (d) { self.current = d && d.ok ? d.member : null; return self.current; })
+        .catch(function () { self.current = null; return null; });
     },
-    // Renders into el: either "Posting as @you" or a join prompt. Calls back with the code or ''.
+    logout: function () {
+      return fetch('/api/join', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+      }).then(function () { location.reload(); });
+    },
+    // Renders into el: "Signed in as @you" or a join/login prompt. cb(signedIn, member).
     gate: function (el, cb) {
       var self = this;
-      this.verify().then(function (ig) {
-        if (ig) {
-          el.innerHTML = 'Member <strong>@' + ig.replace(/[&<>"']/g, '') + '</strong> - you are good to go. <a href="#" id="hsf-not-me">Not you?</a>';
+      this.ready().then(function (m) {
+        if (m) {
+          el.innerHTML = 'Signed in as <strong>@' + esc(m.ig) + '</strong>. <a href="#" id="hsf-logout">Log out</a>';
           el.className = 'member-chip ok';
-          var nm = el.querySelector('#hsf-not-me');
-          if (nm) nm.addEventListener('click', function (e) { e.preventDefault(); self.clear(); self.gate(el, cb); });
-          cb(self.code(), ig);
+          var lo = el.querySelector('#hsf-logout');
+          if (lo) lo.addEventListener('click', function (e) { e.preventDefault(); self.logout(); });
+          cb(true, m);
         } else {
-          el.innerHTML = 'Members only (free, 30 seconds). <a href="join.html">Join with your Instagram</a> first, then come back.';
+          var next = encodeURIComponent(location.pathname.split('/').pop() || 'index.html');
+          el.innerHTML = 'Members only (free, 30 seconds). <a href="join.html?next=' + next + '">Join or log in</a> first, then come back.';
           el.className = 'member-chip';
-          cb('', null);
+          cb(false, null);
         }
       });
     }
