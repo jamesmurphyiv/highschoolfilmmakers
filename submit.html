@@ -38,6 +38,7 @@
     <p class="lede">Tell people what you're making and who you need. Every post is reviewed by a human before it goes live. No emails, no phone numbers, no exact addresses &mdash; contact happens over Instagram.</p>
   </section>
   <section>
+    <div id="member-gate" class="member-chip">Checking membership...</div>
     <form id="submit-form" novalidate>
       <div class="field">
         <label for="f-title">Project title *</label>
@@ -130,8 +131,10 @@
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
+<script src="hsf-member.js"></script>
 <script>
 (function () {
+  hsfMember.gate(document.getElementById('member-gate'), function () {});
   var ROLES = [
     ['director', 'Director'], ['producer', 'Producer'], ['screenwriter', 'Screenwriter'],
     ['dp', 'Cinematographer / DP'], ['camera-op', 'Camera Operator'], ['gaffer', 'Gaffer / Lighting'],
@@ -209,11 +212,12 @@
           title: title, logline: loglineVal, genre: genre, compensation: compensation,
           roles: roles, city: city, region: region, country: 'US',
           lat: loc.lat, lon: loc.lon, ig_handle: ig,
-          turnstile_token: token
+          turnstile_token: token, member_code: hsfMember.code()
         })
       });
     }).then(function (r) {
       if (r.status === 429) { msg('Slow down - too many posts from this network. Try again in an hour.'); return; }
+      if (r.status === 401) { msg('Members only - join free first, then send your project.'); return; }
       if (r.status === 403) { msg('The human check did not go through. Reload the page and try again.'); return; }
       if (!r.ok) { msg('Something went wrong sending that. Try again in a minute.'); return; }
       r.json().then(function (d) {
@@ -238,4 +242,4 @@
 })();
 </script>
 </body>
-  </html>
+</html>
