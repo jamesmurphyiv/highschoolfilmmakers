@@ -236,3 +236,22 @@ form .btn { margin-top: 28px; }
   .photo-strip { grid-template-columns: 1fr; }
   .photo-strip img { height: 220px; }
 }
+
+/* hidden attribute must beat .btn display */
+[hidden] { display: none !important; }
+.join-tabs { display: flex; gap: 10px; margin-bottom: 22px; }
+.at-wrap { display: flex; align-items: center; gap: 8px; }
+.at-wrap span { color: #f0654a; font-weight: 700; }
+.at-wrap input { flex: 1; }
+.pass-note { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.pass-note strong { color: #f0654a; }
+.join-panel input[type="text"], .join-panel input[type="password"], .join-panel select {
+  width: 100%; padding: 12px 14px; margin-top: 6px; background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.14); border-radius: 10px; color: #fff; font-size: 15px;
+}
+.join-panel label { display: block; margin-bottom: 16px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.join-panel .check-row { display: flex; align-items: center; gap: 10px; text-transform: none; letter-spacing: 0; font-size: 14px; }
+.join-panel .cf-turnstile { margin: 6px 0 18px; }
+.join-panel .form-msg { margin-top: 12px; font-size: 14px; }
+.join-panel h2 { margin-bottom: 8px; }
+.join-panel .btn { margin-top: 4px; }
