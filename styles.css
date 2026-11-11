@@ -197,7 +197,7 @@ form .btn { margin-top: 28px; }
 @keyframes hsf-scroll { to { transform: translateX(-50%); } }
 .panel { transition: transform .18s ease, border-color .18s ease; }
 .panel:hover { transform: translateY(-3px); border-color: rgba(240,101,74,.5); }
-.panel-feature { border-color: rgba(147,23,15,.65); background: linear-gradient(180deg, rgba(147,23,15,.14), rgba(147,23,15,0) 70%); }
+.panel-feature { border-color: rgba(147,23,15,.65); }
 .panel h3 { margin-top: 6px; }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
