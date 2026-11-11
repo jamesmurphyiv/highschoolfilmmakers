@@ -125,6 +125,16 @@
     document.getElementById('su-age').value = '';
     document.getElementById('su-ig').value = '';
     document.getElementById('su-msg').hidden = true;
+    hsfMember.gate(document.getElementById('su-gate'), function (ok, m) {
+      if (ok && m) {
+        var n = document.getElementById('su-name');
+        var a = document.getElementById('su-age');
+        var g = document.getElementById('su-ig');
+        n.value = m.first_name; n.disabled = true;
+        a.value = m.age_range; a.disabled = true;
+        g.value = '@' + m.ig; g.disabled = true;
+      }
+    });
     document.getElementById('su-send').disabled = false;
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -167,7 +177,8 @@
           suProject.signup_counts = JSON.stringify(c);
           setTimeout(function () { closeSignup(); render(); }, 1200);
         } else {
-          suMsg(res.d.error === 'you already signed up for this role' ? 'You already signed up for this role.' :
+          suMsg(res.d.error === 'membership required' ? 'Members only - join free first, then sign up.' :
+                res.d.error === 'you already signed up for this role' ? 'You already signed up for this role.' :
                 res.d.error === 'slow down - try again later' ? 'Slow down - try again in a bit.' :
                 'Something went wrong. Try again.');
           btn.disabled = false;
