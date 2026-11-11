@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get a Boost &mdash; High School Filmmakers</title>
+<meta name="description" content="Post your film project to the HSF board and find cast, crew, editors and gear near you.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="board.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="find.html">Find Your People</a>
+    <a href="resources.html">Resources</a>
+    <a href="board.html">Board</a>
+    <a href="festivals.html">Festivals</a>
+    <a href="boost.html" aria-current="page">Boost</a>
+    <a href="about.html">About</a>
+  </nav>
+</header>
+<main>
+  <section class="hero hero-small">
+    <p class="label">Get a boost</p>
+    <h1>Want us to promote it?</h1>
+    <p class="lede">Casting call, festival selection, finished film, crowdfunding push - if it's worth the network's attention, we'll put it in front of them on Instagram. Tell us what to hype.</p>
+  </section>
+  <section class="panel">
+    <form id="boost-form" novalidate>
+      <div class="field">
+        <label for="f-title">PROJECT TITLE *</label>
+        <input id="f-title" type="text" maxlength="80" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="f-pitch">WHAT SHOULD WE SAY? * <span class="hint"><span id="pitch-count">0</span>/400</span></label>
+        <textarea id="f-pitch" rows="4" maxlength="400" placeholder="What it is, why it's cool, and what you want people to do (follow, share, audition, back it)."></textarea>
+      </div>
+      <div class="field">
+        <label for="f-type">WHAT KIND OF BOOST? *</label>
+        <select id="f-type">
+          <option value="">Pick one</option>
+          <option value="cast-crew">Cast / crew call</option>
+          <option value="festival">Festival selection or screening</option>
+          <option value="finished-film">Finished film to watch</option>
+          <option value="crowdfunding">Crowdfunding push</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-ig">YOUR INSTAGRAM * <span class="hint">(so we can tag you - never shown with your request until it posts)</span></label>
+        <input id="f-ig" type="text" maxlength="30" autocomplete="off" placeholder="@handle">
+      </div>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAF9K5KyKqg8cTWhp" data-theme="dark"></div>
+      <p id="form-msg" class="form-msg" hidden></p>
+      <button class="btn btn-solid" type="submit" id="submit-btn">Request the boost</button>
+      <p class="fine-print">Every request is read by a human. We promote what fits the network - no guarantees, no fees. By sending you agree to the <a href="terms.html">Terms &amp; Conditions</a>.</p>
+    </form>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="footer-top">
+    <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="index.html">Home</a>
+      <a href="find.html">Find Your People</a>
+      <a href="resources.html">Resources</a>
+      <a href="board.html">Board</a>
+      <a href="festivals.html">Festivals</a>
+      <a href="about.html">About</a>
+    </nav>
+    <a class="footer-ig" href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">@highschoolfilmmakers</a>
+  </div>
+  <div class="footer-bottom">
+    <span>HSF &mdash; a network for high school filmmakers. Made by students, for students.</span>
+    <a href="terms.html">Terms &amp; Conditions</a>
+  </div>
+</footer>
+<script>
+(function () {
+  var f = document.getElementById('boost-form');
+  var pitch = document.getElementById('f-pitch');
+  pitch.addEventListener('input', function () {
+    document.getElementById('pitch-count').textContent = pitch.value.length;
+  });
+  function msg(text, ok) {
+    var m = document.getElementById('form-msg');
+    m.textContent = text;
+    m.className = 'form-msg' + (ok ? ' ok' : '');
+    m.hidden = false;
+  }
+  f.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var title = document.getElementById('f-title').value.trim();
+    var pitchVal = pitch.value.trim();
+    var type = document.getElementById('f-type').value;
+    var ig = document.getElementById('f-ig').value.trim().replace(/^@/, '');
+    if (!title || !pitchVal || !type) { msg('Fill in every field marked * and try again.'); return; }
+    if (!/^[A-Za-z0-9._]{1,30}$/.test(ig)) { msg('That Instagram handle looks off. Just the handle, letters numbers dots underscores.'); return; }
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    var tokenEl = document.querySelector('[name=cf-turnstile-response]');
+    var token = tokenEl ? tokenEl.value : '';
+    fetch('/api/boost', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, pitch: pitchVal, boost_type: type, ig_handle: ig, turnstile_token: token })
+    }).then(function (r) {
+      if (r.status === 429) { msg('Slow down - try again in an hour.'); return; }
+      if (r.status === 403) { msg('The human check did not go through. Reload and try again.'); return; }
+      if (!r.ok) { msg('Something went wrong sending that. Try again in a minute.'); return; }
+      f.reset();
+      document.getElementById('pitch-count').textContent = '0';
+      if (window.turnstile) { try { window.turnstile.reset(); } catch (e) {} }
+      msg('Sent. We read every request - if it gets picked, you will see it on @highschoolfilmmakers.', true);
+    }).catch(function () {
+      msg('Network trouble. Check your connection and try again.');
+    }).finally(function () {
+      btn.disabled = false;
+      btn.textContent = 'Request the boost';
+    });
+  });
+})();
+</script>
+</body>
+</html>
