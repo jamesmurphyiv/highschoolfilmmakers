@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post a Project &mdash; High School Filmmakers</title>
+<meta name="description" content="Post your film project to the HSF board and find cast, crew, editors and gear near you.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="board.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+<header class="site-header">
+  <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="find.html">Find Your People</a>
+    <a href="resources.html">Resources</a>
+    <a href="board.html">Board</a>
+    <a href="about.html">About</a>
+  </nav>
+</header>
+<main>
+  <section class="hero hero-small">
+    <p class="kicker">Post a project</p>
+    <h1>PUT IT ON THE BOARD.</h1>
+    <p class="lede">Tell people what you're making and who you need. Every post is reviewed by a human before it goes live. No emails, no phone numbers, no exact addresses &mdash; contact happens over Instagram.</p>
+  </section>
+  <section>
+    <form id="submit-form" novalidate>
+      <div class="field">
+        <label for="f-title">Project title *</label>
+        <input type="text" id="f-title" name="title" maxlength="80" required placeholder="e.g. Night Shift - short horror film">
+      </div>
+      <div class="field">
+        <label for="f-logline">Logline *</label>
+        <textarea id="f-logline" name="logline" maxlength="500" required placeholder="One or two sentences. What's the story?"></textarea>
+        <p class="hint"><span id="logline-count">0</span>/500</p>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-genre">Genre *</label>
+          <select id="f-genre" name="genre" required>
+            <option value="">Pick one</option>
+            <option>Drama</option>
+            <option>Comedy</option>
+            <option>Horror</option>
+            <option>Thriller</option>
+            <option>Documentary</option>
+            <option>Music Video</option>
+            <option>Animation</option>
+            <option>Experimental</option>
+            <option>Sci-Fi / Fantasy</option>
+            <option>Action</option>
+            <option>Romance</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-comp">Paid or unpaid? *</label>
+          <select id="f-comp" name="compensation" required>
+            <option value="">Pick one</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+            <option value="deferred">Deferred / TBD</option>
+          </select>
+        </div>
+      </div>
+      <fieldset class="field roles-field">
+        <legend>Roles you need *</legend>
+        <p class="hint">Check everyone you're looking for.</p>
+        <div id="roles-grid" class="roles-grid"></div>
+      </fieldset>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-city">City *</label>
+          <input type="text" id="f-city" name="city" maxlength="60" required placeholder="e.g. Montclair">
+        </div>
+        <div class="field">
+          <label for="f-state">State *</label>
+          <select id="f-state" name="region" required>
+            <option value="">Pick one</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-ig">Instagram handle for contact *</label>
+        <input type="text" id="f-ig" name="ig_handle" maxlength="30" required placeholder="@yourhandle">
+        <p class="hint">This is how people reach you. It's the only contact info shown on the board.</p>
+      </div>
+      <div class="field">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAF9K5KyKqg8cTWhp" data-theme="dark"></div>
+      </div>
+      <div class="cta-row">
+        <button class="btn" type="submit" id="submit-btn">Send for review</button>
+        <a class="btn ghost" href="board.html">Back to the board</a>
+      </div>
+      <div id="form-msg" class="notice" hidden></div>
+    </form>
+  </section>
+</main>
+<footer class="site-footer">
+  <span>HSF &mdash; a network for high school filmmakers</span>
+  <a href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">Instagram</a>
+</footer>
+<script>
+(function () {
+  var ROLES = [
+    ['director', 'Director'], ['producer', 'Producer'], ['screenwriter', 'Screenwriter'],
+    ['dp', 'Cinematographer / DP'], ['camera-op', 'Camera Operator'], ['gaffer', 'Gaffer / Lighting'],
+    ['sound', 'Sound Mixer / Boom Op'], ['production-design', 'Production Designer / Art'],
+    ['costume', 'Costume'], ['makeup', 'Makeup / SFX'], ['editor', 'Editor'], ['colorist', 'Colorist'],
+    ['composer', 'Composer / Sound Designer'], ['actor', 'Actor (lead / supporting / extra)'],
+    ['pa', 'Production Assistant'], ['script-supervisor', 'Script Supervisor'],
+    ['stunts', 'Stunt / Fight Choreographer'], ['vfx', 'VFX / Animator'],
+    ['graphic-design', 'Graphic Designer'], ['social', 'Social / Marketing'], ['other', 'Other']
+  ];
+  var grid = document.getElementById('roles-grid');
+  ROLES.forEach(function (r) {
+    var label = document.createElement('label');
+    label.className = 'role-check';
+    label.innerHTML = '<input type="checkbox" name="role" value="' + r[0] + '"> <span>' + r[1] + '</span>';
+    grid.appendChild(label);
+  });
+  var STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','Other / outside US'];
+  var sel = document.getElementById('f-state');
+  STATES.forEach(function (s) {
+    var o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    sel.appendChild(o);
+  });
+  var logline = document.getElementById('f-logline');
+  logline.addEventListener('input', function () {
+    document.getElementById('logline-count').textContent = logline.value.length;
+  });
+  function msg(text, ok) {
+    var el = document.getElementById('form-msg');
+    el.hidden = false;
+    el.className = 'notice' + (ok ? ' ok' : '');
+    el.textContent = text;
+  }
+  function geocode(city, region) {
+    var q = encodeURIComponent(city + ', ' + region + (region.indexOf('Other') === -1 ? ', USA' : ''));
+    return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + q)
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res || !res.length) return { lat: null, lon: null };
+        return { lat: Math.round(parseFloat(res[0].lat) * 100) / 100, lon: Math.round(parseFloat(res[0].lon) * 100) / 100 };
+      })
+      .catch(function () { return { lat: null, lon: null }; });
+  }
+  document.getElementById('submit-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = e.target;
+    var title = f.title.value.trim(), loglineVal = f.logline.value.trim(),
+        genre = f.genre.value, compensation = f.compensation.value,
+        city = f.city.value.trim(), region = f.region.value,
+        ig = f.ig_handle.value.trim().replace(/^@/, '');
+    var roles = Array.from(f.querySelectorAll('input[name=role]:checked')).map(function (c) { return c.value; });
+    if (!title || !loglineVal || !genre || !compensation || !city || !region || !ig) {
+      msg('Fill in every field marked * and try again.');
+      return;
+    }
+    if (!roles.length) {
+      msg('Check at least one role you need.');
+      return;
+    }
+    if (!/^[A-Za-z0-9._]{1,30}$/.test(ig)) {
+      msg('That Instagram handle looks off. Just the handle, letters numbers dots underscores.');
+      return;
+    }
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    var tokenEl = document.querySelector('[name=cf-turnstile-response]');
+    var token = tokenEl ? tokenEl.value : '';
+    geocode(city, region).then(function (loc) {
+      return fetch('/api/projects', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title, logline: loglineVal, genre: genre, compensation: compensation,
+          roles: roles, city: city, region: region, country: 'US',
+          lat: loc.lat, lon: loc.lon, ig_handle: ig,
+          turnstile_token: token
+        })
+      });
+    }).then(function (r) {
+      if (r.status === 429) { msg('Slow down - too many posts from this network. Try again in an hour.'); return; }
+      if (r.status === 403) { msg('The human check did not go through. Reload the page and try again.'); return; }
+      if (!r.ok) { msg('Something went wrong sending that. Try again in a minute.'); return; }
+      f.reset();
+      document.getElementById('logline-count').textContent = '0';
+      if (window.turnstile) { try { window.turnstile.reset(); } catch (e) {} }
+      msg('Sent. Once it is reviewed and approved it will show up on the board.', true);
+    }).catch(function () {
+      msg('Network trouble. Check your connection and try again.');
+    }).finally(function () {
+      btn.disabled = false;
+      btn.textContent = 'Send for review';
+    });
+  });
+})();
+</script>
+</body>
+</html>
