@@ -32,15 +32,27 @@
   .route-grid, .steps { grid-template-columns: 1fr; }
   .photo-strip.short img { height: 180px; }
 }
+.nav-dd { position: relative; display: inline-block; }
+.nav-dd-menu { display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #0f2438; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 8px; min-width: 180px; z-index: 60; flex-direction: column; gap: 2px; text-align: left; }
+.nav-dd:hover .nav-dd-menu, .nav-dd:focus-within .nav-dd-menu { display: flex; }
+.nav-dd-menu a { padding: 8px 12px; border-radius: 8px; white-space: nowrap; display: block; }
+.nav-dd-menu a:hover { background: rgba(255,255,255,.06); }
 </style>
 </head>
 <body>
 <header class="site-header">
   <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
   <nav>
-    <a href="index.html" aria-current="page">Home</a>
     <a href="board.html">Board</a>
-    <a href="festivals.html">Opportunities</a>
+    <span class="nav-dd">
+      <a href="resources.html" aria-haspopup="true">Resources</a>
+      <span class="nav-dd-menu">
+        <a href="resources.html#grants">Grants</a>
+        <a href="resources.html#scholarships">Scholarships</a>
+        <a href="festivals.html">Festivals</a>
+        <a href="resources.html#internships">Internships</a>
+      </span>
+    </span>
     <a href="about.html">About</a>
     <a href="join.html" id="nav-join">Join</a>
   </nav>
@@ -82,13 +94,13 @@
 
   <section class="photo-strip short" aria-label="Young filmmakers at work" style="margin-top:44px">
     <figure>
-      <img src="https://images.pexels.com/photos/9810364/pexels-photo-9810364.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young film crew shooting a scene together" loading="lazy">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Film_students_on_Grad_film_shoot_2014.jpg" alt="Young film students laughing around a camera on an outdoor shoot" loading="lazy">
     </figure>
     <figure>
-      <img src="https://images.pexels.com/photos/28254441/pexels-photo-28254441.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young filmmaker shooting outdoors with a gimbal" loading="lazy">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Student_film_shoot_on_set_2012.JPG/1280px-Student_film_shoot_on_set_2012.JPG" alt="On-set makeup touch-ups during a student film shoot" loading="lazy">
     </figure>
   </section>
-  <p class="photo-credit">Photos via Pexels (free to use).</p>
+  <p class="photo-credit">Photos: <a href="https://commons.wikimedia.org/wiki/File:Film_students_on_Grad_film_shoot_2014.jpg">Unitec PASA</a> <a href="https://commons.wikimedia.org/wiki/File:Student_film_shoot_on_set_2012.JPG">(2)</a> via Wikimedia Commons, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.en">CC BY-SA 4.0</a>.</p>
 
   <section class="panel panel-feature founder" style="margin-top:34px">
     <p class="label">From the founder</p>
