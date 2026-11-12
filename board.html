@@ -22,13 +22,16 @@
 <header class="site-header">
   <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
   <nav>
-    <a href="index.html">Home</a>
-    <a href="find.html">Find Your People</a>
-    <a href="resources.html">Resources</a>
     <a href="board.html" aria-current="page">Board</a>
-    <a href="festivals.html">Festivals</a>
-    <a href="boost.html">Boost</a>
-    <a href="about.html">About</a>
+    <span class="nav-dd">
+      <a href="resources.html" aria-haspopup="true">Resources</a>
+      <span class="nav-dd-menu">
+        <a href="resources.html#grants">Grants</a>
+        <a href="resources.html#scholarships">Scholarships</a>
+        <a href="festivals.html">Festivals</a>
+        <a href="resources.html#internships">Internships</a>
+      </span>
+    </span>
     <a href="join.html" id="nav-join">Join</a>
   </nav>
 </header>
@@ -41,6 +44,15 @@
       <a class="btn" href="submit.html">Post a project</a>
     </div>
   </section>
+  <section>
+    <p class="label">How it works</p>
+    <div class="steps">
+      <div class="step"><span class="num">one.</span><strong>Post or browse</strong><p>Making something? List every role you need. Looking for a set? Filter by state and role.</p></div>
+      <div class="step"><span class="num">two.</span><strong>Tap a role</strong><p>Signing up takes ten seconds - your first name and age range, nothing else. The project owner sees you on their private responses page.</p></div>
+      <div class="step"><span class="num">three.</span><strong>Roll camera</strong><p>The owner reaches out on Instagram if you left a handle. Every post is reviewed by a human before it goes live.</p></div>
+    </div>
+  </section>
+
   <section>
     <div class="toolbar">
       <label for="filter-genre">Genre</label>
@@ -78,16 +90,15 @@
     <img class="footer-mark" src="hsf-mark.svg" alt="HSF">
     <nav class="footer-nav" aria-label="Footer">
       <a href="index.html">Home</a>
-      <a href="find.html">Find Your People</a>
       <a href="resources.html">Resources</a>
       <a href="board.html">Board</a>
       <a href="festivals.html">Festivals</a>
-      <a href="about.html">About</a>
     </nav>
     <a class="footer-ig" href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">@highschoolfilmmakers</a>
   </div>
   <div class="footer-bottom">
     <span>HSF &mdash; a network for high school filmmakers. Made by students, for students.</span>
+    <span class="footer-mini"><a href="https://jamesmurphyfilms.com" target="_blank" rel="noopener">Portfolio</a> &middot; <a href="https://appertfilms.com" target="_blank" rel="noopener">Appert Films</a></span>
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
