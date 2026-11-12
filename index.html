@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>High School Filmmakers</title>
-<meta name="description" content="A network for high school filmmakers. Find actors, crew, editors, internships and tips. Find your people.">
+<meta name="description" content="A network for high school filmmakers. Find actors, crew, editors, festivals, grants and tips. Find your people.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="High School Filmmakers">
-<meta property="og:description" content="A network for high school filmmakers. Find actors, crew, editors, internships and tips. Find your people.">
+<meta property="og:description" content="A network for high school filmmakers. Find actors, crew, editors, festivals, grants and tips. Find your people.">
 <meta property="og:image" content="https://highschoolfilmmakers.com/hsf-logo.png">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -15,36 +15,144 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Yellowtail&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>
+/* staging homepage additions */
+.hero-compact { padding: 44px 0 30px; }
+.hero-compact h1 { margin: 10px 0 12px; }
+.hero-compact .lede { max-width: 560px; margin-bottom: 22px; }
+.route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 26px 0 34px; }
+.route-grid .panel { margin: 0; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 8px 0 34px; }
+.step { border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 20px; }
+.step .num { font-family: 'Yellowtail', cursive; color: #f0654a; font-size: 30px; display: block; margin-bottom: 6px; }
+.step p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.step strong { color: #fff; display: block; margin-bottom: 4px; font-size: 16px; }
+.filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 18px; }
+.filter-bar input, .filter-bar select {
+  padding: 10px 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px; color: #fff; font-size: 14px;
+}
+.filter-bar input { flex: 1; min-width: 180px; }
+.proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.proj { border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.proj h3 { margin: 0; font-size: 19px; }
+.proj .log { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border: 1px solid rgba(240,101,74,.5); color: #f0654a; border-radius: 999px; padding: 3px 9px; }
+.chip.plain { border-color: rgba(255,255,255,.18); color: var(--muted); }
+.proj a { font-size: 13px; color: #f0654a; text-decoration: none; margin-top: auto; }
+.proj-empty { color: var(--muted); padding: 18px 0; }
+.opp-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 16px; }
+.opp-tab { cursor: pointer; background: none; border: 1px solid rgba(255,255,255,.18); color: var(--muted); border-radius: 999px; padding: 7px 16px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.opp-tab.on { border-color: #f0654a; color: #f0654a; }
+.opp-list { display: none; flex-direction: column; gap: 12px; }
+.opp-list.on { display: flex; }
+.opp { border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 14px 16px; }
+.opp strong { display: block; margin-bottom: 2px; }
+.opp p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.opp a { color: #f0654a; font-size: 13px; }
+.photo-strip.short img { height: 240px; }
+@media (max-width: 760px) {
+  .route-grid, .steps, .proj-grid { grid-template-columns: 1fr; }
+  .photo-strip.short img { height: 180px; }
+}
+</style>
 </head>
 <body>
 <header class="site-header">
   <a class="wordmark" href="index.html" aria-label="High School Filmmakers home"><img src="hsf-logo.png" alt="High School Filmmakers"></a>
   <nav>
     <a href="index.html" aria-current="page">Home</a>
-    <a href="find.html">Find Your People</a>
-    <a href="resources.html">Resources</a>
     <a href="board.html">Board</a>
-    <a href="festivals.html">Festivals</a>
-    <a href="boost.html">Boost</a>
+    <a href="festivals.html">Opportunities</a>
     <a href="about.html">About</a>
     <a href="join.html" id="nav-join">Join</a>
   </nav>
 </header>
 
 <main>
-  <section class="hero">
+  <section class="hero hero-compact">
     <p class="label">A network for high school filmmakers</p>
     <h1>Make the movie.<br>Find your <span class="script-accent">people.</span></h1>
-    <p class="lede">You're making movies before anyone gave you permission. High School Filmmakers connects you with the actors, crew and editors doing the same thing, plus the festivals and tips that get you further.</p>
+    <p class="lede">Real projects, real crews, real festivals - built for filmmakers still in high school.</p>
     <div class="cta-row">
-      <a class="btn btn-solid" href="board.html">Browse the board</a>
+      <a class="btn btn-solid" href="#projects">Browse projects</a>
       <a class="btn" href="submit.html">Post a project</a>
     </div>
     <p class="member-count" id="member-count"></p>
   </section>
 
+  <section class="route-grid">
+    <div class="panel">
+      <p class="label">Find a role</p>
+      <p>Actors, DPs, editors, sound - see who needs you and sign up with a tap.</p>
+      <a class="text-link" href="#projects">See open roles &rarr;</a>
+    </div>
+    <div class="panel">
+      <p class="label">Find your crew</p>
+      <p>Post your project with every role you need. Members near you sign up.</p>
+      <a class="text-link" href="submit.html">Post it free &rarr;</a>
+    </div>
+  </section>
 
-  <section class="photo-strip" aria-label="Young filmmakers at work">
+  <section>
+    <p class="label">How it works</p>
+    <div class="steps">
+      <div class="step"><span class="num">one.</span><strong>Post your project</strong><p>Title, logline, city, and every role you need. A human reviews every post before it goes live.</p></div>
+      <div class="step"><span class="num">two.</span><strong>Members sign up</strong><p>People near you pick a role. You see everyone on your private responses page.</p></div>
+      <div class="step"><span class="num">three.</span><strong>Roll camera</strong><p>You talk over Instagram. No emails, no phone numbers, no exact addresses, ever.</p></div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <p class="label">On the board right now</p>
+    <h2>Real projects looking for you.</h2>
+    <div class="filter-bar">
+      <input id="f-q" type="text" placeholder="City or state (e.g. NJ, Austin, CA)">
+      <select id="f-role"><option value="">Any role</option></select>
+      <select id="f-comp">
+        <option value="">Paid or unpaid</option>
+        <option value="paid">Paid</option>
+        <option value="unpaid">Unpaid</option>
+        <option value="deferred">Deferred</option>
+      </select>
+    </div>
+    <div class="proj-grid" id="proj-grid">
+      <p class="proj-empty">Loading the board...</p>
+    </div>
+    <p style="margin-top:14px"><a class="text-link" href="board.html">Open the full board &rarr;</a></p>
+  </section>
+
+  <section id="opportunities" style="margin-top:44px">
+    <p class="label">Opportunities</p>
+    <h2>Grants, scholarships, festivals, internships.</h2>
+    <div class="opp-tabs" role="tablist">
+      <button class="opp-tab on" data-opp="grants" type="button">Grants</button>
+      <button class="opp-tab" data-opp="scholarships" type="button">Scholarships</button>
+      <button class="opp-tab" data-opp="festivals" type="button">Festivals</button>
+      <button class="opp-tab" data-opp="internships" type="button">Internships</button>
+    </div>
+
+    <div class="opp-list on" id="opp-grants">
+      <div class="opp"><strong>Panavision New Filmmaker Program</strong><p>Camera equipment grants for student filmmakers shooting real projects.</p><a href="https://www.panavision.com/resources/new-filmmaker-program/equipment-grant" target="_blank" rel="noopener">panavision.com &nearr;</a></div>
+      <div class="opp"><strong>Carole Dorothy Joyce Student Filmmaker Grant</strong><p>Annual grant for student filmmakers, run by the Texas Film Commission (Texas residents).</p><a href="https://gov.texas.gov/film/hotline-entries/carole-dorothy-joyce-2026-student-filmmaker-grant" target="_blank" rel="noopener">gov.texas.gov &nearr;</a></div>
+    </div>
+    <div class="opp-list" id="opp-scholarships">
+      <div class="opp"><strong>YoungArts National Arts Competition - Film</strong><p>For artists ages 15-18. Winners get cash awards, mentorship and national recognition.</p><a href="https://youngarts.org/discipline/film/" target="_blank" rel="noopener">youngarts.org &nearr;</a></div>
+      <div class="opp"><strong>More, checked by hand</strong><p>We keep a running list of programs actually open to high schoolers.</p><a href="resources.html">HSF resources &rarr;</a></div>
+    </div>
+    <div class="opp-list" id="opp-festivals">
+      <div class="opp"><strong>All American High School Film Festival</strong><p>The biggest student film festival in the country. Teen categories, real juries.</p><a href="festivals.html">On our festival map &rarr;</a></div>
+      <div class="opp"><strong>NFFTY - National Film Festival for Talented Youth</strong><p>For directors 24 and under. Screenings, networking and workshops.</p><a href="https://www.nffty.org/" target="_blank" rel="noopener">nffty.org &nearr;</a></div>
+      <div class="opp"><strong>All 22 festivals, on the map</strong><p>Every one checked by hand - deadlines, fees, student categories.</p><a href="festivals.html">Open the festival map &rarr;</a></div>
+    </div>
+    <div class="opp-list" id="opp-internships">
+      <div class="opp"><strong>Fresh Films</strong><p>Paid summer film program and weekly filmmaking for teens - you crew real shoots.</p><a href="https://freshfilms.org/programs/" target="_blank" rel="noopener">freshfilms.org &nearr;</a></div>
+      <div class="opp"><strong>Reel Works</strong><p>Free after-school and in-school filmmaking programs for NYC teens, with industry mentors.</p><a href="https://www.reelworks.org/" target="_blank" rel="noopener">reelworks.org &nearr;</a></div>
+    </div>
+  </section>
+
+  <section class="photo-strip short" aria-label="Young filmmakers at work" style="margin-top:44px">
     <figure>
       <img src="https://images.pexels.com/photos/9810364/pexels-photo-9810364.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young film crew shooting a scene together" loading="lazy">
     </figure>
@@ -52,61 +160,16 @@
       <img src="https://images.pexels.com/photos/28254441/pexels-photo-28254441.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="A young filmmaker shooting outdoors with a gimbal" loading="lazy">
     </figure>
   </section>
-  <p class="photo-credit">Real shoots, real crews. Photos via Pexels (free to use).</p>
+  <p class="photo-credit">Photos via Pexels (free to use).</p>
 
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-      <span>Casting calls</span><span>Crew wanted</span><span>Festivals</span><span>Editors needed</span><span>Make the movie</span>
-      <span>Casting calls</span><span>Crew wanted</span><span>Festivals</span><span>Editors needed</span><span>Make the movie</span>
-    </div>
-  </div>
-
-  <section class="panel-grid">
-    <div class="panel">
-      <p class="label">Actors</p>
-      <p>You know exactly who the character is. You just don't know anyone who can play them. Now you do.</p>
-    </div>
-    <div class="panel">
-      <p class="label">Crew</p>
-      <p>DPs, gaffers, sound mixers, production designers. A real crew, even if it's three people and a phone.</p>
-    </div>
-    <div class="panel">
-      <p class="label">Editors &amp; post</p>
-      <p>Editors, colorists, composers and VFX people who want to cut something real, not another school project.</p>
-    </div>
-  </section>
-
-  <section class="panel panel-feature founder">
+  <section class="panel panel-feature founder" style="margin-top:34px">
     <p class="label">From the founder</p>
-    <blockquote>“Hey, I’m James Murphy. I’m 16, I make movies, and I started High School Filmmakers because finding a crew is the hardest part of making a film when you’re in high school. You can write the script and storyboard every shot, but you can’t shoot alone — you need a DP, actors, somebody to hold the boom. Nobody hands you that network at our age, so I built it. Post your project, find your people, and go make the movie.”</blockquote>
-    <p class="founder-sig">— <span class="script-accent">James Murphy</span>, founder, 16</p>
-  </section>
-
-  <section class="panel panel-feature">
-    <p class="label">The Board</p>
-    <h2>Post it. They sign up. You roll camera.</h2>
-    <p>List your project with every role you need - lead actor to boom op. People near you tap a role, drop a first name and age range, and you see everyone on your private responses page. Every post is reviewed by a human before it goes live. Membership is free - no emails, no phone numbers, ever.</p>
-    <div class="cta-row">
-      <a class="btn btn-solid" href="board.html">See who's near you</a>
-      <a class="text-link" href="find.html">How it works &rarr;</a>
-    </div>
-  </section>
-
-  <section class="panel-grid">
-    <div class="panel">
-      <p class="label">Festivals</p>
-      <h3>22 festivals that actually take teen films.</h3>
-      <p>Every one checked by hand - deadlines, fees, student categories. On the map.</p>
-      <a class="text-link" href="festivals.html">Open the festival map &rarr;</a>
-    </div>
-    <div class="panel">
-      <p class="label">More than people</p>
-      <h3>Internships, programs and tips.</h3>
-      <p>Programs and grants that are actually open to high schoolers, plus practical tips on shooting, lighting and sound.</p>
-      <a class="text-link" href="resources.html">See resources &rarr;</a>
-    </div>
+    <blockquote>&ldquo;Hey, I&rsquo;m James Murphy. I&rsquo;m 16, I make movies, and I started High School Filmmakers because finding a crew is the hardest part of making a film when you&rsquo;re in high school. You can write the script and storyboard every shot, but you can&rsquo;t shoot alone &mdash; you need a DP, actors, somebody to hold the boom. Nobody hands you that network at our age, so I built it. Post your project, find your people, and go make the movie.&rdquo;</blockquote>
+    <p class="founder-sig">&mdash; <span class="script-accent">James Murphy</span>, founder, 16</p>
   </section>
 </main>
+
+<script src="hsf-member.js"></script>
 <script>
 fetch('/api/join').then(function (r) { return r.json(); }).then(function (d) {
   var el = document.getElementById('member-count');
@@ -114,6 +177,80 @@ fetch('/api/join').then(function (r) { return r.json(); }).then(function (d) {
     el.innerHTML = '<strong>' + d.count + '</strong> member' + (d.count === 1 ? '' : 's') + ' and counting. <a href="join.html" style="color:#f0654a">Join free</a>.';
   }
 }).catch(function () {});
+hsfMember.ready().then(function (m) {
+  if (!m) return;
+  var a = document.getElementById('nav-join');
+  if (a) a.textContent = '@' + m.ig;
+});
+</script>
+<script>
+(function () {
+  var ROLE_LABELS = { 'director':'Director','producer':'Producer','screenwriter':'Screenwriter','dp':'DP','camera-op':'Camera Op','gaffer':'Gaffer','sound-mixer':'Sound Mixer','boom-op':'Boom Op','production-design':'Production Design','costume':'Costume','makeup':'Makeup','editor':'Editor','colorist':'Colorist','composer':'Composer','lead-actor':'Lead Actor','supporting-actor':'Supporting Actor','extra':'Extra','pa':'PA','script-supervisor':'Script Sup.','stunts':'Stunts','vfx':'VFX','graphic-design':'Graphic Design','social':'Social','other':'Other' };
+  var COMP_LABELS = { paid: 'Paid', unpaid: 'Unpaid', deferred: 'Deferred' };
+  var all = [];
+  var grid = document.getElementById('proj-grid');
+  var q = document.getElementById('f-q'), role = document.getElementById('f-role'), comp = document.getElementById('f-comp');
+  Object.keys(ROLE_LABELS).forEach(function (k) {
+    var o = document.createElement('option');
+    o.value = k; o.textContent = ROLE_LABELS[k];
+    role.appendChild(o);
+  });
+  function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+  function render() {
+    var term = q.value.trim().toLowerCase();
+    var r = role.value, c = comp.value;
+    var list = all.filter(function (p) {
+      if (r && !(Array.isArray(p.roles) && p.roles.indexOf(r) >= 0)) return false;
+      if (c && p.compensation !== c) return false;
+      if (term) {
+        var hay = (p.city + ' ' + p.region + ' ' + p.title).toLowerCase();
+        if (hay.indexOf(term) < 0) return false;
+      }
+      return true;
+    });
+    if (!list.length) {
+      grid.innerHTML = '<p class="proj-empty">Nothing matches that yet. <a href="submit.html" style="color:#f0654a">Post your project</a> and be the first.</p>';
+      return;
+    }
+    grid.innerHTML = list.slice(0, 8).map(function (p) {
+      var roles = (Array.isArray(p.roles) ? p.roles : []).slice(0, 5).map(function (x) {
+        return '<span class="chip">' + esc(ROLE_LABELS[x] || x) + '</span>';
+      }).join('');
+      var extra = (Array.isArray(p.roles) && p.roles.length > 5) ? '<span class="chip plain">+' + (p.roles.length - 5) + ' more</span>' : '';
+      return '<div class="proj">' +
+        '<h3>' + esc(p.title) + '</h3>' +
+        '<p class="log">' + esc(String(p.logline || '').slice(0, 140)) + (String(p.logline || '').length > 140 ? '...' : '') + '</p>' +
+        '<div class="chips"><span class="chip plain">' + esc(p.genre) + '</span>' +
+        '<span class="chip plain">' + esc(COMP_LABELS[p.compensation] || p.compensation) + '</span>' +
+        '<span class="chip plain">' + esc(p.city) + ', ' + esc(p.region) + '</span></div>' +
+        '<div class="chips">' + roles + extra + '</div>' +
+        '<a href="board.html">Sign up on the board &rarr;</a>' +
+        '</div>';
+    }).join('');
+  }
+  [q, role, comp].forEach(function (el) {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+  fetch('/api/projects').then(function (r) { return r.json(); }).then(function (d) {
+    all = (d.projects || []).map(function (p) {
+      try { p.roles = typeof p.roles === 'string' ? JSON.parse(p.roles) : p.roles; } catch (e) { p.roles = []; }
+      return p;
+    });
+    render();
+  }).catch(function () {
+    grid.innerHTML = '<p class="proj-empty">Could not load the board. <a href="board.html" style="color:#f0654a">Open it directly</a>.</p>';
+  });
+  // opportunity tabs
+  document.querySelectorAll('.opp-tab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.opp-tab').forEach(function (x) { x.classList.remove('on'); });
+      document.querySelectorAll('.opp-list').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      document.getElementById('opp-' + b.getAttribute('data-opp')).classList.add('on');
+    });
+  });
+})();
 </script>
 
 <footer class="site-footer">
@@ -125,6 +262,7 @@ fetch('/api/join').then(function (r) { return r.json(); }).then(function (d) {
       <a href="resources.html">Resources</a>
       <a href="board.html">Board</a>
       <a href="festivals.html">Festivals</a>
+      <a href="boost.html">Boost</a>
       <a href="about.html">About</a>
     </nav>
     <a class="footer-ig" href="https://www.instagram.com/highschoolfilmmakers" target="_blank" rel="noopener">@highschoolfilmmakers</a>
@@ -134,13 +272,5 @@ fetch('/api/join').then(function (r) { return r.json(); }).then(function (d) {
     <a href="terms.html">Terms &amp; Conditions</a>
   </div>
 </footer>
-<script src="hsf-member.js"></script>
-<script>
-hsfMember.ready().then(function (m) {
-  if (!m) return;
-  var a = document.getElementById('nav-join');
-  if (a) { a.textContent = '@' + m.ig; a.removeAttribute('aria-current'); }
-});
-</script>
 </body>
 </html>
